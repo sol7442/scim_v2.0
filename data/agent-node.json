@@ -1,0 +1,48 @@
+[
+  {
+    "name": "folder1",
+    "type": "folder",
+    "children": [
+      {
+        "name": "server11",
+        "type": "server",
+        "children": [
+          {
+            "name": "connection111",
+            "type": "connection"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "folder2",
+    "type": "folder",
+    "children": [
+      {
+        "name": "folder21",
+        "type": "folder",
+        "children": [
+          {
+            "name": "server211",
+            "type": "server",
+            "children": [
+              {
+                "name": "connection2111",
+                "type": "connection"
+              },
+              {
+                "name": "connection2112",
+                "type": "connection"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "folder22",
+        "type": "folder"
+      }
+    ]
+  }
+]

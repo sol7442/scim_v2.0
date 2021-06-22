@@ -1,0 +1,6 @@
+//scim-repository-maria
+
+dependencies {
+	implementation project(":scim-repository")
+	implementation fileTree(dir: '../../libs/maria', include: ['*.jar'])
+}

@@ -1,0 +1,8 @@
+//scim-core
+
+
+dependencies {
+	implementation project(":scim-common")
+
+	
+}

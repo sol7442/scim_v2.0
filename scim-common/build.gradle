@@ -1,0 +1,5 @@
+//scim-common
+
+dependencies {
+	implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+}

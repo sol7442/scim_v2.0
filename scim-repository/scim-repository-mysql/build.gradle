@@ -1,0 +1,6 @@
+//scim-repository-mysql
+
+dependencies {
+	implementation project(":scim-repository")
+	implementation fileTree(dir: '../../libs/mysql', include: ['*.jar'])
+}

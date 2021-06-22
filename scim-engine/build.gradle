@@ -1,0 +1,5 @@
+//scim-engine
+dependencies {
+	implementation project(":scim-repository")
+	implementation group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
+}

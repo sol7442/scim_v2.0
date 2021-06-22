@@ -1,0 +1,11 @@
+pakage ${packageName}
+
+<#list packages as package>
+import ${package};
+</#list>  
+
+public class ${className} implements ${interfaceName} {
+  <#list attributes as attr>
+    public ${attr.type.name()} ${attr.name} ; // ${attr.description}  ;
+  </#list>  
+}

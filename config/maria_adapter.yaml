@@ -1,0 +1,8 @@
+!!com.raonsnc.scim.repo.conf.StorageConfig
+columOfTable: SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND
+  TABLE_NAME = ?
+driver: org.mariadb.jdbc.Driver
+schema: SELECT DISTINCT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME
+  NOT IN ('information_schema', 'performance_schema','mysql')
+table: SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?
+validate: SELECT 1

@@ -1,0 +1,4 @@
+!!com.raonsnc.scim.repo.conf.DataSourceConfig
+jdbcUrl: jdbc:mariadb://192.168.0.105:3306/oacx_stag
+passwd: oacxpwd@1
+user: root

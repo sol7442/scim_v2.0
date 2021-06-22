@@ -1,0 +1,6 @@
+//scim-repository-oracle
+
+dependencies {
+	implementation project(":scim-repository")
+	implementation fileTree(dir: '../../libs/oracle', include: ['ojdbc7.jar'])
+}
