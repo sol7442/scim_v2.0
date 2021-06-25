@@ -11,12 +11,11 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.raonscn.scim.node.ScimNodeType;
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
-import com.raonsnc.scim.schema.ScimType;
+import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,11 +24,29 @@ public class MariaStorage implements ScimStorage {
 	DataSource dataSource;
 	StorageConfig config;
 	
+	Map<String,Integer> metaData = new HashMap<String, Integer>();
+	
 	public MariaStorage(DataSource data_source, StorageConfig config) {
 		this.dataSource = data_source;
 		this.config = config;
 	}
 
+	private void close_connection(Connection connection, PreparedStatement statement, ResultSet result_set) {
+		try {
+			if(connection != null)
+				connection.close();			
+			
+			if( statement != null)
+				statement.close();
+			
+			if(result_set != null)
+				result_set.close();
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	@Override
 	public boolean testConnect() throws ScimException {
 		boolean result = false;
@@ -37,6 +54,12 @@ public class MariaStorage implements ScimStorage {
 		try {
 			connection = dataSource.getConnection();
 			result = connection.createStatement().execute(config.getValidate());
+			if(result) {
+				ResultSet result_set  =  connection.getMetaData().getTypeInfo();
+				while(result_set.next()) {
+					metaData.put(result_set.getString("TYPE_NAME").toLowerCase(), result_set.getInt("DATA_TYPE"));
+				}
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
@@ -66,23 +89,6 @@ public class MariaStorage implements ScimStorage {
 		
 		return schema_list;
 	}
-	
-	
-	private void close_connection(Connection connection, PreparedStatement statement, ResultSet result_set) {
-		try {
-			if(connection != null)
-				connection.close();			
-			
-			if( statement != null)
-				statement.close();
-			
-			if(result_set != null)
-				result_set.close();
-			
-		}catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
 
 	@Override
 	public List<ScimResourceSchema> getResourceSchemaList(String schema) throws ScimException {
@@ -98,13 +104,13 @@ public class MariaStorage implements ScimStorage {
 			result_set = statement.executeQuery();
 			while(result_set.next()) {
 
-				ScimType.ResouceType res_type = find_resource_type(result_set);
+				ScimTypeDefinition.StorageType res_type = find_resource_type(result_set);
 				
 				ScimResourceSchema resource = ScimResourceSchema.builder()
 						.name(result_set.getString("TABLE_NAME"))
 						.owner(result_set.getString("TABLE_SCHEMA"))
 						.type(res_type)
-						.attributes(new ArrayList<ScimAttributeSchema>())
+						.attributes(new HashMap<String,ScimAttributeSchema>())
 						.schemas(new ArrayList<String>())
 						.build();
 				
@@ -119,48 +125,43 @@ public class MariaStorage implements ScimStorage {
 		return resource_list;
 	}
 
-	
-
-
-	private ScimType.DataType find_data_type(ResultSet result_set) throws SQLException {
-		ScimType.DataType type = null;
-		String data_type = result_set.getString("DATA_TYPE");
+	private int find_data_type(String type_name) {
+		return this.metaData.get(type_name);
+	}
+	private ScimTypeDefinition.DataType find_scim_type(String sql_data_type) throws SQLException {
+		ScimTypeDefinition.DataType scim_data_type = null;
+		if(sql_data_type != null) {
+			switch (sql_data_type.toLowerCase()) {
+			case "varchar":
+			case "bigint":
+				scim_data_type =  ScimTypeDefinition.DataType.String;
+				break;
+			case "binary":
+			case "bit":
+			case "blob":
+				scim_data_type =  ScimTypeDefinition.DataType.Binary;
+				break;
+			case "date":
+				scim_data_type = ScimTypeDefinition.DataType.Date;
+				break;
+			case "datetime":
+				scim_data_type =  ScimTypeDefinition.DataType.DateTime;
+				break;
+			case "decimal":
+			case "dobule":
+				scim_data_type = ScimTypeDefinition.DataType.Decimal;
+				break;
+			default:
+				scim_data_type = ScimTypeDefinition.DataType.String;
+				break;
+			}	
+		}
 		
-		switch (data_type.toLowerCase()) {
-		case "varchar":
-		case "bigint":
-			type = ScimType.DataType.String;
-			break;
-		case "binary":
-		case "bit":
-		case "blob":
-			type = ScimType.DataType.Binary;
-			break;
-		case "date":
-			type = ScimType.DataType.Date;
-			break;
-		case "datetime":
-			type = ScimType.DataType.DateTime;
-			break;
-		case "decimal":
-		case "dobule":
-			type = ScimType.DataType.Decimal;
-			break;
-		default:
-			type = ScimType.DataType.String;
-			break;
-		}
-		return type;
+		log.debug("{}->{}",sql_data_type,scim_data_type);
+		return scim_data_type;
 	}
 
-	private boolean find_nullable(ResultSet result_set) throws SQLException {
-		boolean is_null_able = false;
-		String null_able = result_set.getString("IS_NULLABLE");
-		if("YES".equals(null_able.toUpperCase())) {
-			is_null_able = true;
-		}
-		return is_null_able;
-	}
+	
 	
 	@Override
 	public void findAttributeSchema(ScimResourceSchema resource) throws ScimException {
@@ -168,8 +169,8 @@ public class MariaStorage implements ScimStorage {
 	}
 
 	@Override
-	public List<ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
-		List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
+	public Map<String,ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
+		Map<String,ScimAttributeSchema> attributes = new HashMap<String, ScimAttributeSchema>();
 
 		Connection connection = null;
 		PreparedStatement statement = null;
@@ -183,25 +184,38 @@ public class MariaStorage implements ScimStorage {
 						
 			result_set = statement.executeQuery();
 			while(result_set.next()) {
-
-				boolean is_null_able = find_nullable(result_set);
-				ScimType.DataType data_type = find_data_type(result_set);
 				
-				String default_value = result_set.getString("COLUMN_DEFAULT");
-				if(default_value == null || default_value.toUpperCase().equals("NULL")) {
-					default_value = null;
+				String column_name   	= result_set.getString("COLUMN_NAME");
+				int    index	     	= result_set.getInt("ORDINAL_POSITION");
+				String column_default	= result_set.getString("COLUMN_DEFAULT");
+				String nullable			= result_set.getString("IS_NULLABLE");
+				String type_name		= result_set.getString("DATA_TYPE");
+				int    length 		    = result_set.getInt("CHARACTER_MAXIMUM_LENGTH");
+						
+				if(column_default != null && column_default.toUpperCase().equals("NULL")) {
+					column_default = null;
+				}
+				boolean is_null_able = true;
+				if(nullable != null && nullable.equals("NO")) {
+					is_null_able = false;
 				}
 				
-				
-				ScimAttributeSchema attribute = ScimAttributeSchema.builder()
-						.name(result_set.getString("COLUMN_NAME").toLowerCase())
-						.defaultValue(default_value)
+				ScimTypeDefinition.DataType scim_type = find_scim_type(type_name);
+				ScimAttributeSchema attribute =
+						ScimAttributeSchema.builder()
+						.name(column_name.toLowerCase())
+						.columnName(column_name)
+						.defaultValue(column_default)
 						.description(result_set.getString("COLUMN_COMMENT"))
 						.nullAble(is_null_able)
-						.type(data_type)
+						.type(scim_type)
+						.typeName(type_name)
+						.dataType(find_data_type(type_name))
+						.index(index)
+						.length(length)
 						.build();
 				
-				attribute_list.add(attribute);
+				attributes.put(attribute.getName(), attribute);
 			}
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -209,19 +223,18 @@ public class MariaStorage implements ScimStorage {
 			close_connection(connection, statement, result_set );
 		}
 		
-		return attribute_list;
+		return attributes;
 	}
 
-	
-	private ScimType.ResouceType find_resource_type(ResultSet result_set) throws SQLException {
-		ScimType.ResouceType res_type;
+	private ScimTypeDefinition.StorageType find_resource_type(ResultSet result_set) throws SQLException {
+		ScimTypeDefinition.StorageType res_type;
 		String table_type = result_set.getString("TABLE_TYPE");
 		if("VIEW".equals(table_type.toUpperCase())) {
-			res_type = ScimType.ResouceType.VIEW;
-		}else if("BASE TABLE".equals(table_type.toUpperCase())) {
-			res_type = ScimType.ResouceType.TABLE;
+			res_type = ScimTypeDefinition.StorageType.VIEW;
+		}else if("BASE TABLE".equals(table_type)) {
+			res_type = ScimTypeDefinition.StorageType.TABLE;
 		}else {
-			res_type = ScimType.ResouceType.TABLE;
+			res_type = ScimTypeDefinition.StorageType.TABLE;
 		}
 		return res_type;
 	}

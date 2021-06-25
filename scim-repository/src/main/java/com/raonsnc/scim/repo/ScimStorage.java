@@ -1,6 +1,7 @@
 package com.raonsnc.scim.repo;
 
 import java.util.List;
+import java.util.Map;
 
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
@@ -10,7 +11,6 @@ public interface ScimStorage {
 	public boolean testConnect()throws ScimException;
 	public List<String> getSchemaList() throws ScimException;
 	public List<ScimResourceSchema> getResourceSchemaList(String schema) throws ScimException ;
-	public List<ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException;
+	public Map<String,ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException;
 	public void findAttributeSchema(ScimResourceSchema resource) throws ScimException;
-	
 }

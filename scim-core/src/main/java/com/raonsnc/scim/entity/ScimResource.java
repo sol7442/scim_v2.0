@@ -1,4 +1,4 @@
-package com.raonsnc.scim.entiry;
+package com.raonsnc.scim.entity;
 
 import java.util.List;
 

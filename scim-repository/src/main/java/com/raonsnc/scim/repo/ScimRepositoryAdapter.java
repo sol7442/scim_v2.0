@@ -2,57 +2,70 @@ package com.raonsnc.scim.repo;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import com.raonsnc.scim.ScimException;
+import com.raonsnc.scim.entity.ScimEntity;
+import com.raonsnc.scim.filter.ScimFilter;
+import com.raonsnc.scim.repo.rdb.AbstractRDBScimService;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ScimRepositoryAdapter implements ScimRepository {
-	DataSource dataSource;
-	ScimStorage storage;
-	
+public class ScimRepositoryAdapter extends AbstractRDBScimService implements ScimRepository {
 	public ScimRepositoryAdapter(DataSource data_source, ScimStorage storage) {
-		this.dataSource = data_source;
-		this.storage = storage;
+		super(data_source, storage);
 	}
-	
+
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void distroy() {
-		if (dataSource instanceof Closeable) {
-			Closeable closeable_data_source = (Closeable) dataSource;
+	public boolean open() throws ScimException {
+		return this.storage.testConnect();
+	}
+
+	@Override
+	public void close() throws ScimException {
+		if (source instanceof Closeable) {
+			Closeable closeable_data_source = (Closeable) source;
 			try {
 				closeable_data_source.close();
 			} catch (IOException e) {
-				log.error(e.getMessage(),e);
+				throw new ScimException(e.getMessage(),e);
 			}
 		}
-		log.info("{}",dataSource);
 	}
 
-	@Override
-	public boolean isConnected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean testConnect() throws ScimException{
-		return this.storage.testConnect();
-	}
+//	@Override
+//	public void distroy() {
+//		if (dataSource instanceof Closeable) {
+//			Closeable closeable_data_source = (Closeable) dataSource;
+//			try {
+//				closeable_data_source.close();
+//			} catch (IOException e) {
+//				log.error(e.getMessage(),e);
+//			}
+//		}
+//		log.info("{}",dataSource);
+//	}
+//
+//	@Override
+//	public boolean isConnected() {
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean testConnect() throws ScimException{
+//		return this.storage.testConnect();
+//	}
 
 	@Override
 	public List<String> getSchemaList() throws ScimException {
@@ -70,11 +83,32 @@ public class ScimRepositoryAdapter implements ScimRepository {
 	}
 
 	@Override
-	public List<ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
+	public Map<String, ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
 		return this.storage.getAttributeSchema(resource);
 	}
 
+	@Override
+	public Map<String, Object> query(String query) throws ScimException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Map<String, Object> call(String query) throws ScimException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public void delete(String id) throws ScimException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<ScimEntity> search(ScimFilter filter) throws ScimException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

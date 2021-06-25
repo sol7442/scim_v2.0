@@ -3,7 +3,7 @@ package scim.json;
 
 import java.util.HashMap;
 
-import com.raonsnc.scim.entiry.ScimEntity;
+import com.raonsnc.scim.entity.ScimEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

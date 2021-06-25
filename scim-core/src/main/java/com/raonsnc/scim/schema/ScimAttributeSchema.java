@@ -13,18 +13,27 @@ import lombok.Data;
 public class ScimAttributeSchema {
 	String uri;
 	String name;
-	ScimType.DataType type;
+	String methodName;
+	String columnName;
+	String jsonName;
+	ScimTypeDefinition.DataType type;
+	String typeName;
+	int dataType;
+	
+	int index;
+	int length;
 	Boolean multiValued;
 	String description;
 	Boolean nullAble;
 	Boolean required;
 	Boolean caseExact;
+	
 	String defaultValue;
-	ScimType.Mutability mutability;
-	ScimType.Returned returned;
-	ScimType.Uniqueness uniqueness;
+	ScimTypeDefinition.Mutability mutability;
+	ScimTypeDefinition.Returned returned;
+	ScimTypeDefinition.Uniqueness uniqueness;
 	
 	List<ScimAttributeSchema> subAttributes;
 	List<String> canonicalValues;
-	List<ScimType.ReferenceType> referenceTypes;
+	List<ScimTypeDefinition.ReferenceType> referenceTypes;
 }

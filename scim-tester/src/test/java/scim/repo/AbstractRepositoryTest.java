@@ -57,14 +57,14 @@ public abstract class AbstractRepositoryTest {
 						log.info(" --{}",resource);
 						
 						repository.findAttributeSchema(resource);
-						List<ScimAttributeSchema> attribute_list_1 = resource.getAttributes();
-						for (ScimAttributeSchema attribute : attribute_list_1) {
-							log.info(" ---{}",attribute);
+						Map<String,ScimAttributeSchema> attributes_1 = resource.getAttributes();
+						for (Entry<String, ScimAttributeSchema> entry : attributes_1.entrySet()) {
+							log.info(" ---{}:{}",entry.getKey(),entry.getValue());
 						}
 						
-						List<ScimAttributeSchema> attribute_list_2 = repository.getAttributeSchema(resource);
-						for (ScimAttributeSchema attribute : attribute_list_2) {
-							log.info(" ---{}",attribute);
+						Map<String,ScimAttributeSchema> attributes_2 = repository.getAttributeSchema(resource);
+						for (Entry<String, ScimAttributeSchema> entry : attributes_2.entrySet()) {
+							log.info(" ---{}:{}",entry.getKey(),entry.getValue());
 						}
 						
 					}

@@ -3,7 +3,7 @@ package scim.core;
 import org.junit.jupiter.api.Test;
 
 import com.raonsnc.scim.convert.DataAccessEntityMaker;
-import com.raonsnc.scim.schema.ScimType;
+import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,13 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 public class TypeTest {
 	@Test
 	public void type_test() {
-		log.debug("object   : {}",ScimType.Returned.DEFAULT);
-		log.debug("name 	: {}",ScimType.Returned.DEFAULT.name());
-		log.debug("value 	: {}",ScimType.Returned.DEFAULT.value());
-		log.debug("toString : {}",ScimType.Returned.DEFAULT.toString());
+		log.debug("object   : {}",ScimTypeDefinition.Returned.DEFAULT);
+		log.debug("name 	: {}",ScimTypeDefinition.Returned.DEFAULT.name());
+		log.debug("value 	: {}",ScimTypeDefinition.Returned.DEFAULT.value());
+		log.debug("toString : {}",ScimTypeDefinition.Returned.DEFAULT.toString());
 		
-		log.debug("valueOf(DEFAULT)  : {}",ScimType.Returned.valueOf("DEFAULT"));
-		log.debug("valueOf(default)  : {}",ScimType.Returned.valueBy("default"));
+		log.debug("valueOf(DEFAULT)  : {}",ScimTypeDefinition.Returned.valueOf("DEFAULT"));
+		log.debug("valueOf(default)  : {}",ScimTypeDefinition.Returned.valueBy("default"));
 	}
 	
 	
