@@ -17,12 +17,6 @@ public interface ScimRepository extends ScimService{
 	public Map<String,ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException;
 	public void findAttributeSchema(ScimResourceSchema resource) throws ScimException;
 	
-//	public boolean isConnected() ;
-//	public boolean testConnect() throws ScimException;
-//	
-//	public boolean initialize() throws ScimException;
-//	public void distroy() throws ScimException;
-	
 	
 	public void setResourcerSchema(ScimResourceSchema schema);
 }

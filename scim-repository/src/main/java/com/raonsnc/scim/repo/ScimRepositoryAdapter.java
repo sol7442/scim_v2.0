@@ -10,14 +10,14 @@ import javax.sql.DataSource;
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.entity.ScimEntity;
 import com.raonsnc.scim.filter.ScimFilter;
-import com.raonsnc.scim.repo.rdb.AbstractRDBScimService;
+import com.raonsnc.scim.repo.rdb.ScimRdbScimService;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ScimRepositoryAdapter extends AbstractRDBScimService implements ScimRepository {
+public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRepository {
 	public ScimRepositoryAdapter(DataSource data_source, ScimStorage storage) {
 		super(data_source, storage);
 	}
@@ -43,29 +43,6 @@ public class ScimRepositoryAdapter extends AbstractRDBScimService implements Sci
 			}
 		}
 	}
-
-//	@Override
-//	public void distroy() {
-//		if (dataSource instanceof Closeable) {
-//			Closeable closeable_data_source = (Closeable) dataSource;
-//			try {
-//				closeable_data_source.close();
-//			} catch (IOException e) {
-//				log.error(e.getMessage(),e);
-//			}
-//		}
-//		log.info("{}",dataSource);
-//	}
-//
-//	@Override
-//	public boolean isConnected() {
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean testConnect() throws ScimException{
-//		return this.storage.testConnect();
-//	}
 
 	@Override
 	public List<String> getSchemaList() throws ScimException {
@@ -97,12 +74,6 @@ public class ScimRepositoryAdapter extends AbstractRDBScimService implements Sci
 	public Map<String, Object> call(String query) throws ScimException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void delete(String id) throws ScimException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

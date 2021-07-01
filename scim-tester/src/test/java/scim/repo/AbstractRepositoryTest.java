@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.repo.ScimRepository;
 import com.raonsnc.scim.repo.ScimRepositoryAdapter;
 import com.raonsnc.scim.repo.ScimStorage;
@@ -39,7 +40,7 @@ public abstract class AbstractRepositoryTest {
 	public abstract ScimRepository getRepository();// load_adapter_config_file();
 	
 	@Test
-	public void repository_test() {
+	public void repository_test() throws ScimException {
 		ScimRepository repository = null;
 		try {
 
@@ -47,7 +48,7 @@ public abstract class AbstractRepositoryTest {
 			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, load_adapter_config_file());
 			repository = new ScimRepositoryAdapter(data_source, stoage);
 			
-			if(repository.testConnect()) {
+			if(repository.open()) {
 				log.info("connection : {}",true);
 				List<String> schema_list = 	repository.getSchemaList();
 				for (String schema_name : schema_list) {
@@ -119,7 +120,7 @@ public abstract class AbstractRepositoryTest {
 			log.error(e.getMessage(),e);
 		}finally {
 			if(repository != null) {
-				repository.distroy();
+				repository.close();
 			}
 		}
 	}

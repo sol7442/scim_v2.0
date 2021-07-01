@@ -1,0 +1,16 @@
+package ${packageName};
+
+<#list packages as package>
+import ${package};
+</#list>  
+
+public class ${className} extends ${superClass} implements <#list interfaces as interface>${interface} <#sep>,</#list> {
+	private static final long serialVersionUID = ${serialVersion?c}L;
+  
+  <#list attributes as attr>
+    <#if attr.attributeType ?has_content>
+    // <#if attr.description ?has_content>${attr.description}</#if>  ;
+   	public static final String ${attr.attributeName} = "${attr.name}";
+    </#if>
+  </#list>
+}

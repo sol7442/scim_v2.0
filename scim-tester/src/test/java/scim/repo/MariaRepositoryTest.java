@@ -2,6 +2,7 @@ package scim.repo;
 
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.raonscn.scim.config.ConfigrationHandler;
@@ -51,7 +52,7 @@ public class MariaRepositoryTest extends AbstractRepositoryTest {
 		try {
 			config =  ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file );
 			log.debug("{}",config);
-		} catch (ScimException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return config;
@@ -60,7 +61,7 @@ public class MariaRepositoryTest extends AbstractRepositoryTest {
 	public StorageConfig load_adapter_config_file() {
 		try {
 			return ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file );
-		} catch (ScimException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;

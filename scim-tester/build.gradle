@@ -3,11 +3,10 @@
 
 dependencies {
 
-	implementation project(":scim-converter")
 	implementation project(":scim-engine")
 	implementation project(":scim-repository:scim-repository-mysql")
 	implementation project(":scim-repository:scim-repository-maria")
-	
+	implementation project(":scim-represent")
 	
 	
 	testCompileOnly 		group: 'org.projectlombok', name: 'lombok', version: '1.18.20'	

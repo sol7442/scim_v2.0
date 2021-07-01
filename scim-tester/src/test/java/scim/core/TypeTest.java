@@ -2,7 +2,7 @@ package scim.core;
 
 import org.junit.jupiter.api.Test;
 
-import com.raonsnc.scim.convert.DataAccessEntityMaker;
+import com.raonsnc.scim.engine.ScimClassMaker;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class TypeTest {
 	
 	
 	public void DataAccessEntity_Test() {
-		DataAccessEntityMaker maker = new DataAccessEntityMaker();
+		ScimClassMaker maker = new ScimClassMaker();
 		
 		
 		

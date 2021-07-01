@@ -16,7 +16,12 @@ include "scim-repository"
 include "scim-repository:scim-repository-mysql"
 include "scim-repository:scim-repository-maria"
 include "scim-repository:scim-repository-oracle"
-include "scim-converter"
+
+include "scim-represent"
+
 include "scim-engine"
+
+include "scim-agent"
+include "scim-manager"
 
 include "scim-tester"

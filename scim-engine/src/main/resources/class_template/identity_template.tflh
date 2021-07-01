@@ -1,0 +1,59 @@
+package ${packageName};
+
+<#list packages as package>
+import ${package};
+</#list>  
+
+public class ${className} extends ${superClass} implements <#list interfaces as interface>${interface} <#sep>,</#list> {
+	private static final long serialVersionUID = ${serialVersion?c}L;
+  
+  <#list attributes as attr>
+    // ${attr.description}  ;
+    public static final String ${attr.columnName} = "${attr.name}";
+    
+  </#list>  
+  
+  	@Override
+	public void parse(String identity) throws ScimException{
+  	<#if attributesSize == 1>
+  	  <#list attributes as attr>
+  		put("${attr.name}", DataConverter.to${attr.className}(identity));
+	  </#list>		  
+    <#else>
+		StringTokenizer entry_token = new StringTokenizer(identity,"&");
+		while(entry_token.hasMoreTokens()) {
+			String entry_string = entry_token.nextToken();
+			
+			String[] entry = entry_string.split("=");
+			if(entry.length != 2) {
+				throw new ScimException("IDENTITY PARSER ERROR : " + entry_string);
+			}
+			
+		  <#list attributes as attr>
+   	  		if ("${attr.name}".equals(entry[0])){
+   	  			put("${attr.name}", DataConverter.to${attr.type}(entry[1]));
+  			}<#sep> else
+	  	  </#list>
+	  	  
+		}
+			  	  	  
+    </#if>
+	}
+	@Override
+	public void parse(ScimEntity entity) throws ScimException {
+	  <#list attributes as attr>
+   		put("${attr.name}",entity.get("${attr.name}")); 
+  	  </#list>
+	}
+	
+	@Override
+	public String bind() throws ScimException{
+  	<#if attributesSize == 1>
+  	  <#list attributes as attr>
+  		return DataConverter.toString(get("${attr.name}"));
+	  </#list>		  
+    <#else>	
+   	 	return <#list attributes as attr>"${attr.name}=" + DataConverter.toString(get("${attr.name}"))<#sep> +"&"+ </#list>;
+    </#if>
+	}
+}

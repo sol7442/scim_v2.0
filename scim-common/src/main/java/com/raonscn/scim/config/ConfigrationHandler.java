@@ -14,7 +14,6 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import com.raonsnc.scim.ScimException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +29,12 @@ public class ConfigrationHandler {
 	}
 	
 	
-	public <T> T load(Class<T> clazz,String file_name) throws ScimException {
+	public <T> T load(Class<T> clazz,String file_name) throws FileNotFoundException {
         try {
         	Yaml yaml = new Yaml(new Constructor(clazz));
 			return yaml.load(new FileInputStream(file_name));
 		} catch (FileNotFoundException e) {
-			throw new ScimException(file_name,e);
+			throw e;
 		}
 	}
 	

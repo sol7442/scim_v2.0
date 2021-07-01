@@ -10,8 +10,8 @@ import com.raonsnc.scim.filter.ScimFilter;
 public interface ScimService {
 	public void create(ScimEntity entity) 		throws ScimException;
 	public ScimEntity read(String id) 	throws ScimException;
-	public void update(ScimEntity entity) 		throws ScimException;
-	public void delete(String id) 		throws ScimException;
+	public ScimEntity update(ScimEntity entity) 		throws ScimException;
+	public boolean delete(String id) 		throws ScimException;
 	public List<ScimEntity> search(ScimFilter filter) throws ScimException;
 	
 	public Map<String,Object> query(String query) throws ScimException;
