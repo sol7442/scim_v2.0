@@ -1,0 +1,13 @@
+//scim-agent
+
+def jersey_ver = '2.6'
+def jetty_ver = '9.4.36.v20210114'
+dependencies {
+	implementation project(":scim-engine")
+	
+	implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: jersey_ver
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: jersey_ver
+    
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: jetty_ver
+    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: jetty_ver
+}

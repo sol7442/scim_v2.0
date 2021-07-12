@@ -4,7 +4,7 @@ import java.util.HashMap;
 import com.raonsnc.scim.entity.ScimEntity;
 
 public class OacxAdminEntity extends HashMap<String, Object> implements ScimEntity  {
-	private static final long serialVersionUID = 7670507287954803229L;
+	private static final long serialVersionUID = 4874197486830569659L;
   
     // 전화번호  ;
     public static final String PHONE_NO = "phone_no";

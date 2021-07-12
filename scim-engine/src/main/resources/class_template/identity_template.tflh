@@ -9,7 +9,7 @@ public class ${className} extends ${superClass} implements <#list interfaces as 
   
   <#list attributes as attr>
     // ${attr.description}  ;
-    public static final String ${attr.columnName} = "${attr.name}";
+    public static final String ${attr.columnName?upper_case} = "${attr.name}";
     
   </#list>  
   

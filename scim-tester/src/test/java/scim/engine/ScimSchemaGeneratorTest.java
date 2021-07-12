@@ -31,7 +31,6 @@ import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
 import com.raonsnc.scim.represent.ScimRepresentAttributeSchema;
 import com.raonsnc.scim.represent.ScimRepresentResourceSchema;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
-import com.raonsnc.scim.schema.ScimIdentitySchema;
 import com.raonsnc.scim.schema.ScimMetaSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 import com.raonsnc.scim.schema.ScimSimpleAttributeSchema;
@@ -46,11 +45,23 @@ public class ScimSchemaGeneratorTest {
 
 	static String repository_config_file 	= "../config/maria_config.yaml";
 	static String repository_adatper_file	= "../config/maria_adapter.yaml";
-	static String oacx_admin_resource_file	= "../out/oacx_admin_resource.json";
-	static String oacx_admin_represent_file	= "../out/oacx_admin_represent.json";
-	static String oacx_admin_identity_file	= "../out/oacx_admin_identity.json";
-	static String oacx_admin_meta_file		= "../out/oacx_admin_meta.json";
-	static String oacx_admin_type_file		= "../out/oacx_admin_type.json";
+	
+	static String oacx_admin_workspace		    = "./src/test/java/";
+	static String oacx_admin_package		    = "com.raonsnc.scim.example";
+	
+	static String oacx_admin_repository_file	= "../out/oacx_admin_repository.json";
+	static String oacx_admin_identity_file		= "../out/oacx_admin_identity.json";
+	static String oacx_admin_entity_class   	= "OACX_ADMIN_ENTITY";
+	static String oacx_admin_identity_class		= "OACX_ADMIN_IDENTITY";
+	
+	static String oacx_admin_mapping_file		= "../out/oacx_admin_mapping.json";
+	static String oacx_admin_mapping_class      = "OACX_ADMIN_MAPPER";
+	
+	static String oacx_admin_represent_file		= "../out/oacx_admin_represent.json";
+	static String oacx_admin_meta_file			= "../out/oacx_admin_meta.json";
+	static String oacx_admin_represent_class    = "OACX_ADMIN_REPRESENT";
+	
+	
 	
 	static ScimRdbResourceSchema schema;
 	static ScimRepresentResourceSchema represent;
@@ -81,7 +92,7 @@ public class ScimSchemaGeneratorTest {
 	}
 	
 	@Test @Order(1)
-	public void rdb_resource_schema_generate_test() {
+	public void rdb_repository_schema_generate_test() {
 		try {
 			
 			List<String> schema_list = 	repository.getSchemaList();
@@ -100,9 +111,9 @@ public class ScimSchemaGeneratorTest {
 						
 						schema.setId(UUID.randomUUID().toString());
 						schema.setName("OacxAdmin");
-						schema.setDescription("OACX ADMIN RESOURCE SCHEMA");
+						schema.setDescription("OACX ADMIN REPOSITORY SCHEMA");
 						
-						FileWriter writer = new FileWriter(new File(oacx_admin_resource_file));
+						FileWriter writer = new FileWriter(new File(oacx_admin_repository_file));
 						writer.write(new ScimJson().toJson(schema,ScimRdbResourceSchema.class));
 						writer.close();
 					}
@@ -113,8 +124,156 @@ public class ScimSchemaGeneratorTest {
 			log.error(e.getMessage(),e);
 		}
 	}
-	
 	@Test @Order(2)
+	public void scim_identity_schema_generate_test() {
+		try {
+			// mapper
+			ScimSimpleIdentitySchema identity = new ScimSimpleIdentitySchema(schema.getAttribute("id"));
+			{
+				identity.setName("id");
+				identity.setDescription("identity");
+				identity.setType(ScimTypeDefinition.DataType.String.getType());
+			}
+			
+			
+			log.info(" -?-{}\n{}",identity,identity.toJson());
+			
+			FileWriter writer = new FileWriter(new File(oacx_admin_identity_file));
+			writer.write(new ScimJson().toJson(identity,ScimSimpleIdentitySchema.class));
+			writer.close();
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
+
+	
+	@Test @Order(3)
+	public void rdb_entity_class_generate_test() {
+		try {
+			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
+			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+				attribute_list.add(entry.getValue());
+			}
+			
+			ScimClassMaker entity_class_maker = new ScimClassMaker();
+			entity_class_maker.setWorkspace(oacx_admin_workspace);
+			entity_class_maker.setPackageName(oacx_admin_package);
+			
+			entity_class_maker.addPackage("java.util.HashMap");
+			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
+			
+			entity_class_maker.setSuperClass("HashMap<String, Object>");
+			entity_class_maker.addInterface("ScimEntity");
+			entity_class_maker.setClassName(oacx_admin_entity_class);
+
+			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
+			entity_class_maker.setAttributes(attribute_list);
+		
+			entity_class_maker.checkFileDirectory();
+			
+			entity_class_maker.setTemplateFile("entity_template.tflh");
+			entity_class_maker.make();
+			
+			ScimClassMaker meta_class_maker = new ScimClassMaker();
+			meta_class_maker.setPackageName("com.test");
+			meta_class_maker.setWorkspace("D:\\workspace\\.raon.git\\scim\\scim-tester\\src\\test\\java");
+			
+			meta_class_maker.addPackage("java.util.HashMap");
+			meta_class_maker.addPackage("com.raonsnc.scim.entity.ScimMeta");
+			
+			meta_class_maker.setSuperClass("HashMap<String, Object>");
+			meta_class_maker.addInterface("ScimMeta");
+			meta_class_maker.setClassName(schema.getName()+ "Meta");
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	@Test @Order(4)
+	public void rdb_idnetity_class_generate_test() {
+		try {
+			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
+			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+				attribute_list.add(entry.getValue());
+			}
+			
+			ScimClassMaker identity_class_maker = new ScimClassMaker();
+			
+			identity_class_maker.setWorkspace(oacx_admin_workspace);
+			identity_class_maker.setPackageName(oacx_admin_package);
+			
+			identity_class_maker.addPackage("java.util.HashMap");
+			identity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
+			identity_class_maker.addPackage("com.raonsnc.scim.entity.ScimIdentity");
+			identity_class_maker.addPackage("com.raonsnc.scim.ScimException");
+			identity_class_maker.addPackage("com.raonscn.scim.util.DataConverter");
+			
+			
+			identity_class_maker.setSuperClass("HashMap<String, Object>");
+			identity_class_maker.addInterface("ScimIdentity");
+			identity_class_maker.setClassName(oacx_admin_identity_class);
+			
+			
+			identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
+			
+			List<ScimAttributeSchema> identity_attributes = new ArrayList<ScimAttributeSchema>();
+			identity_attributes.add(schema.getAttribute("id"));
+			identity_class_maker.setAttributesSize(1);
+			
+			identity_class_maker.setAttributes(identity_attributes);
+			
+			identity_class_maker.checkFileDirectory();
+			
+			identity_class_maker.setTemplateFile("identity_template.tflh");
+			identity_class_maker.make();
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
+	@Test @Order(5)
+	public void scim_resource_schema_generate_test() {
+		try {
+			represent = new ScimRepresentResourceSchema();
+
+			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+				ScimAttributeSchema attribute = new ScimAttributeSchema(entry.getValue());
+				
+				ScimAttributeSchema represent_attribute = new ScimAttributeSchema(attribute);
+				int index_ = attribute.getName().lastIndexOf("_");
+				if(index_ > 0) {
+					represent_attribute.setName(attribute.getName().toLowerCase().substring(0,index_));
+				}else {
+					represent_attribute.setName(attribute.getName().toLowerCase());
+				}
+				
+				log.debug("{}",represent_attribute.getName());
+				
+				represent.addAttribute(represent_attribute);
+			}
+			
+			represent.setId(oacx_admin_meta_file);
+			represent.setName(oacx_admin_meta_file);
+			represent.setDescription(oacx_admin_meta_file);
+			
+			log.info(" -3-{}\n{}",represent,represent.toJson());
+			
+			FileWriter writer = new FileWriter(new File(oacx_admin_represent_file));
+			writer.write(new ScimJson().toJson(represent,ScimRepresentResourceSchema.class));
+			writer.close();
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
+	
+	
+	
+	@Test @Order(6)
 	public void scim_meta_schema_generate_test() {
 		try {
 			// mapper
@@ -189,150 +348,8 @@ public class ScimSchemaGeneratorTest {
 		}
 	}
 	
-	@Test @Order(3)
-	public void scim_identity_schema_generate_test() {
-		try {
-			// mapper
-			ScimIdentitySchema identity = new ScimSimpleIdentitySchema();
-			{
-				identity.setName("id");
-				identity.setDescription("identity");
-				identity.setType(ScimTypeDefinition.DataType.String.getType());
-			}
-			
-			
-			log.info(" -?-{}\n{}",identity,identity.toJson());
-			
-			FileWriter writer = new FileWriter(new File(oacx_admin_identity_file));
-			writer.write(new ScimJson().toJson(identity,ScimIdentitySchema.class));
-			writer.close();
-			
-		}catch (Exception e) {
-			log.error(e.getMessage(),e);
-		}
-	}
 	
-	@Test @Order(4)
-	public void rdb_resource_class_generate_test() {
-		try {
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
-				attribute_list.add(entry.getValue());
-			}
-			
-			ScimClassMaker entity_class_maker = new ScimClassMaker();
-			entity_class_maker.setPackageName("com.test");
-			entity_class_maker.setWorkspace("D:\\workspace\\.raon.git\\scim\\scim-tester\\src\\test\\java");
-			
-			entity_class_maker.addPackage("java.util.HashMap");
-			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
-			
-			entity_class_maker.setSuperClass("HashMap<String, Object>");
-			entity_class_maker.addInterface("ScimEntity");
-			entity_class_maker.setClassName(schema.getName() + "Entity");
-
-			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
-			entity_class_maker.setAttributes(attribute_list);
-		
-			entity_class_maker.checkFileDirectory();
-			
-			entity_class_maker.setTemplateFile("entity_template.tflh");
-			entity_class_maker.make();
-			
-			ScimClassMaker identity_class_maker = new ScimClassMaker();
-			
-			identity_class_maker.setPackageName("com.test");
-			identity_class_maker.setWorkspace("D:\\workspace\\.raon.git\\scim\\scim-tester\\src\\test\\java");
-			
-			identity_class_maker.addPackage("java.util.HashMap");
-			identity_class_maker.addPackage("java.util.StringTokenizer");
-			identity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
-			identity_class_maker.addPackage("com.raonsnc.scim.entity.ScimIdentity");
-			identity_class_maker.addPackage("com.raonsnc.scim.ScimException");
-			identity_class_maker.addPackage("com.raonscn.scim.util.DataConverter");
-			
-			
-			identity_class_maker.setSuperClass("HashMap<String, Object>");
-			identity_class_maker.addInterface("ScimIdentity");
-			identity_class_maker.setClassName(schema.getName() + "Idnetity");
-			
-			
-			identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
-			
-			List<ScimAttributeSchema> identity_attributes = new ArrayList<ScimAttributeSchema>();
-			identity_attributes.add(schema.getAttribute("id"));
-			identity_class_maker.setAttributesSize(1);
-			
-			identity_class_maker.setAttributes(identity_attributes);
-			
-			
-			identity_class_maker.checkFileDirectory();
-			
-			identity_class_maker.setTemplateFile("identity_template.tflh");
-			identity_class_maker.make();
-			
-			
-			ScimClassMaker meta_class_maker = new ScimClassMaker();
-			meta_class_maker.setPackageName("com.test");
-			meta_class_maker.setWorkspace("D:\\workspace\\.raon.git\\scim\\scim-tester\\src\\test\\java");
-			
-			meta_class_maker.addPackage("java.util.HashMap");
-			meta_class_maker.addPackage("com.raonsnc.scim.entity.ScimMeta");
-			
-			meta_class_maker.setSuperClass("HashMap<String, Object>");
-			meta_class_maker.addInterface("ScimMeta");
-			meta_class_maker.setClassName(schema.getName()+ "Meta");
-			
-//			List<ScimAttributeSchema> meta_attribute = new ArrayList<ScimAttributeSchema>();
-//			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
-//				meta_attribute.add(entry.getValue());
-//				if(entry.getKey().equals("create_date")) {
-//					
-//				}else if(entry.getKey().equals("update_date")) {
-//					
-//				}else if(entry.getKey().equals("update_date")) {
-//					
-//				}
-//			}
-			
-			
-			
-		}catch (Exception e) {
-			log.error(e.getMessage(),e);
-		}
-	}
-	
-
-	
-	@Test @Order(5)
-	public void scim_resource_schema_generate_test() {
-		try {
-			represent = new ScimRepresentResourceSchema();
-
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
-				ScimAttributeSchema attribute = new ScimAttributeSchema(entry.getValue());
-				represent.addAttribute(attribute);
-			}
-			
-			represent.setId(oacx_admin_meta_file);
-			represent.setName(oacx_admin_meta_file);
-			represent.setDescription(oacx_admin_meta_file);
-			
-			log.info(" -3-{}\n{}",represent,represent.toJson());
-			
-			FileWriter writer = new FileWriter(new File(oacx_admin_represent_file));
-			writer.write(new ScimJson().toJson(represent,ScimRepresentResourceSchema.class));
-			writer.close();
-			
-		}catch (Exception e) {
-			log.error(e.getMessage(),e);
-		}
-	}
-	
-
-	
-
-	@Test @Order(6)
+	@Test @Order(7)
 	public void scim_resource_class_generate_test() {
 		try {
 
@@ -344,18 +361,15 @@ public class ScimSchemaGeneratorTest {
 				attribute_list.add(attribute);
 			}
 			
+			entity_class_maker.setWorkspace(oacx_admin_workspace);
+			entity_class_maker.setPackageName(oacx_admin_package);
 			
-
-			
-			entity_class_maker.setPackageName("com.test");
 			entity_class_maker.addPackage("java.util.HashMap");
 			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
 			
-			entity_class_maker.setWorkspace("D:\\workspace\\.raon.git\\scim\\scim-tester\\src\\test\\java");
-			
 			entity_class_maker.setSuperClass("HashMap<String, Object>");
 			entity_class_maker.addInterface("ScimEntity");
-			entity_class_maker.setClassName("NewDataTransferEntity");
+			entity_class_maker.setClassName(oacx_admin_represent_class);
 			
 			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 			entity_class_maker.setAttributes(attribute_list);
@@ -363,6 +377,40 @@ public class ScimSchemaGeneratorTest {
 			entity_class_maker.checkFileDirectory();
 			
 			entity_class_maker.setTemplateFile("transfer_template.tflh");
+			entity_class_maker.make();
+			
+		}catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
+	@Test @Order(8)
+	public void scim_mapper_class_generate_test() {
+		try {
+
+			ScimClassMaker entity_class_maker = new ScimClassMaker();
+			
+			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
+			for (Entry<String, ScimAttributeSchema> entry : represent.getAttributes().entrySet()) {
+				ScimRepresentAttributeSchema attribute = new ScimRepresentAttributeSchema(entry.getValue());
+				attribute_list.add(attribute);
+			}
+			
+			entity_class_maker.setWorkspace(oacx_admin_workspace);
+			entity_class_maker.setPackageName(oacx_admin_package);
+			
+			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
+			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimMapper");
+			
+			entity_class_maker.addInterface("ScimMapper");
+			entity_class_maker.setClassName(oacx_admin_mapping_class);
+			
+			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
+			entity_class_maker.setAttributes(attribute_list);
+		
+			entity_class_maker.checkFileDirectory();
+			
+			entity_class_maker.setTemplateFile("mapper_template.tflh");
 			entity_class_maker.make();
 			
 		}catch (Exception e) {

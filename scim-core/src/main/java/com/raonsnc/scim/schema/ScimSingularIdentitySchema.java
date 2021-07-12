@@ -1,7 +1,17 @@
 package com.raonsnc.scim.schema;
 
-public class ScimSingularIdentitySchema extends ScimIdentitySchema{
-	public ScimSingularIdentitySchema() {
-		this.multiValued=true;
+import com.google.gson.GsonBuilder;
+
+public class ScimSingularIdentitySchema extends ScimSingularAttribute{
+	ScimSingularIdentitySchema(ScimAttributeSchema schema) {
+		super(schema);
+		this.mutability = ScimTypeDefinition.Mutability.readWrite.name();
+		this.returned   = ScimTypeDefinition.Returned.ALWAYS.value();
+		this.uniqueness = ScimTypeDefinition.Uniqueness.server.name();
+	}
+	
+	public String toJson() {
+		new GsonBuilder().setPrettyPrinting().create();
+		return new GsonBuilder().setPrettyPrinting().create().toJson(this);
 	}
 }
