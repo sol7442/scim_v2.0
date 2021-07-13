@@ -41,27 +41,30 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ScimSchemaGeneratorTest {
+public class ScimSchemaGeneratorTest_SCIM_USER {
 
 	static String repository_config_file 	= "../config/maria_config.yaml";
 	static String repository_adatper_file	= "../config/maria_adapter.yaml";
 	
-	static String oacx_admin_workspace		    = "./src/test/java/";
-	static String oacx_admin_package		    = "com.raonsnc.scim.example";
+	static String scim_user_workspace		= "./src/test/java/";
+	static String scim_user_package		    = "com.raonsnc.scim.example";
 	
-	static String oacx_admin_repository_file	= "../out/oacx_admin_repository.json";
-	static String oacx_admin_identity_file		= "../out/oacx_admin_identity.json";
-	static String oacx_admin_entity_class   	= "OACX_ADMIN_ENTITY";
-	static String oacx_admin_identity_class		= "OACX_ADMIN_IDENTITY";
+	static String scim_user_repository_file	= "../out/scim_user_repository.json";
+	static String scim_user_identity_file	= "../out/scim_user_identity.json";
+	static String scim_user_entity_class   	= "SCIM_USER_ENTITY";
+	static String scim_user_identity_class	= "SCIM_USER_IDENTITY";
 	
-	static String oacx_admin_mapping_file		= "../out/oacx_admin_mapping.json";
-	static String oacx_admin_mapping_class      = "OACX_ADMIN_MAPPER";
+	static String scim_user_mapping_file	= "../out/scim_user_mapping.json";
+	static String scim_user_mapping_class   = "SCIM_USER_MAPPER";
 	
-	static String oacx_admin_represent_file		= "../out/oacx_admin_represent.json";
-	static String oacx_admin_meta_file			= "../out/oacx_admin_meta.json";
-	static String oacx_admin_represent_class    = "OACX_ADMIN_REPRESENT";
+	static String scim_user_represent_file	= "../out/scim_user_represent.json";
+	static String scim_user_meta_file		= "../out/scim_user_meta.json";
+	static String scim_user_represent_class = "SCIM_USER_REPRESENT";
 	
-	
+	static String scim_user_table_name = "SCIM_USER";
+	static String scim_owner_name      = "scim";
+			
+			
 	
 	static ScimRdbResourceSchema schema;
 	static ScimRepresentResourceSchema represent;
@@ -102,7 +105,7 @@ public class ScimSchemaGeneratorTest {
 				for (ScimResourceSchema res : resource_list) {
 					ScimRdbResourceSchema resource = (ScimRdbResourceSchema)res;
 					
-					if("OACX_ADMIN".equals(resource.getStorageName()) && "oacx".equals(resource.getStorageOwner())) {
+					if(scim_user_table_name.equals(resource.getStorageName()) && scim_owner_name.equals(resource.getStorageOwner())) {
 						schema = (ScimRdbResourceSchema)res;
 						
 						repository.findAttributeSchema(schema);
@@ -110,10 +113,10 @@ public class ScimSchemaGeneratorTest {
 						log.info(" --{}\n{}",schema,schema.toJson());
 						
 						schema.setId(UUID.randomUUID().toString());
-						schema.setName("OacxAdmin");
-						schema.setDescription("OACX ADMIN REPOSITORY SCHEMA");
+						schema.setName("ScimUser");
+						schema.setDescription("Scim User REPOSITORY SCHEMA");
 						
-						FileWriter writer = new FileWriter(new File(oacx_admin_repository_file));
+						FileWriter writer = new FileWriter(new File(scim_user_repository_file));
 						writer.write(new ScimJson().toJson(schema,ScimRdbResourceSchema.class));
 						writer.close();
 					}
@@ -138,7 +141,7 @@ public class ScimSchemaGeneratorTest {
 			
 			log.info(" -?-{}\n{}",identity,identity.toJson());
 			
-			FileWriter writer = new FileWriter(new File(oacx_admin_identity_file));
+			FileWriter writer = new FileWriter(new File(scim_user_identity_file));
 			writer.write(new ScimJson().toJson(identity,ScimSimpleIdentitySchema.class));
 			writer.close();
 			
@@ -158,15 +161,15 @@ public class ScimSchemaGeneratorTest {
 			}
 			
 			ScimClassMaker entity_class_maker = new ScimClassMaker();
-			entity_class_maker.setWorkspace(oacx_admin_workspace);
-			entity_class_maker.setPackageName(oacx_admin_package);
+			entity_class_maker.setWorkspace(scim_user_workspace);
+			entity_class_maker.setPackageName(scim_user_package);
 			
 			entity_class_maker.addPackage("java.util.HashMap");
 			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
 			
 			entity_class_maker.setSuperClass("HashMap<String, Object>");
 			entity_class_maker.addInterface("ScimEntity");
-			entity_class_maker.setClassName(oacx_admin_entity_class);
+			entity_class_maker.setClassName(scim_user_entity_class);
 
 			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 			entity_class_maker.setAttributes(attribute_list);
@@ -201,8 +204,8 @@ public class ScimSchemaGeneratorTest {
 			
 			ScimClassMaker identity_class_maker = new ScimClassMaker();
 			
-			identity_class_maker.setWorkspace(oacx_admin_workspace);
-			identity_class_maker.setPackageName(oacx_admin_package);
+			identity_class_maker.setWorkspace(scim_user_workspace);
+			identity_class_maker.setPackageName(scim_user_package);
 			
 			identity_class_maker.addPackage("java.util.HashMap");
 			identity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
@@ -213,7 +216,7 @@ public class ScimSchemaGeneratorTest {
 			
 			identity_class_maker.setSuperClass("HashMap<String, Object>");
 			identity_class_maker.addInterface("ScimIdentity");
-			identity_class_maker.setClassName(oacx_admin_identity_class);
+			identity_class_maker.setClassName(scim_user_identity_class);
 			
 			
 			identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
@@ -255,13 +258,13 @@ public class ScimSchemaGeneratorTest {
 				represent.addAttribute(represent_attribute);
 			}
 			
-			represent.setId(oacx_admin_meta_file);
-			represent.setName(oacx_admin_meta_file);
-			represent.setDescription(oacx_admin_meta_file);
+			represent.setId(scim_user_meta_file);
+			represent.setName(scim_user_meta_file);
+			represent.setDescription(scim_user_meta_file);
 			
 			log.info(" -3-{}\n{}",represent,represent.toJson());
 			
-			FileWriter writer = new FileWriter(new File(oacx_admin_represent_file));
+			FileWriter writer = new FileWriter(new File(scim_user_represent_file));
 			writer.write(new ScimJson().toJson(represent,ScimRepresentResourceSchema.class));
 			writer.close();
 			
@@ -339,7 +342,7 @@ public class ScimSchemaGeneratorTest {
 			
 			log.info(" -?-{}\n{}",meta,meta.toJson());
 			
-			FileWriter writer = new FileWriter(new File(oacx_admin_meta_file));
+			FileWriter writer = new FileWriter(new File(scim_user_meta_file));
 			writer.write(new ScimJson().toJson(meta,ScimMetaSchema.class));
 			writer.close();
 			
@@ -361,15 +364,15 @@ public class ScimSchemaGeneratorTest {
 				attribute_list.add(attribute);
 			}
 			
-			entity_class_maker.setWorkspace(oacx_admin_workspace);
-			entity_class_maker.setPackageName(oacx_admin_package);
+			entity_class_maker.setWorkspace(scim_user_workspace);
+			entity_class_maker.setPackageName(scim_user_package);
 			
 			entity_class_maker.addPackage("java.util.HashMap");
 			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
 			
 			entity_class_maker.setSuperClass("HashMap<String, Object>");
 			entity_class_maker.addInterface("ScimEntity");
-			entity_class_maker.setClassName(oacx_admin_represent_class);
+			entity_class_maker.setClassName(scim_user_represent_class);
 			
 			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 			entity_class_maker.setAttributes(attribute_list);
@@ -396,14 +399,14 @@ public class ScimSchemaGeneratorTest {
 				attribute_list.add(attribute);
 			}
 			
-			entity_class_maker.setWorkspace(oacx_admin_workspace);
-			entity_class_maker.setPackageName(oacx_admin_package);
+			entity_class_maker.setWorkspace(scim_user_workspace);
+			entity_class_maker.setPackageName(scim_user_package);
 			
 			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimEntity");
 			entity_class_maker.addPackage("com.raonsnc.scim.entity.ScimMapper");
 			
 			entity_class_maker.addInterface("ScimMapper");
-			entity_class_maker.setClassName(oacx_admin_mapping_class);
+			entity_class_maker.setClassName(scim_user_mapping_class);
 			
 			entity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 			entity_class_maker.setAttributes(attribute_list);

@@ -8,8 +8,9 @@ dependencies {
 	implementation project(":scim-repository:scim-repository-maria")
 	implementation project(":scim-represent")
 	
+	implementation 		group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.2'
 	
 	testCompileOnly 		group: 'org.projectlombok', name: 'lombok', version: '1.18.20'	
  	testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.2'
+    
 }

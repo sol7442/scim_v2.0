@@ -14,19 +14,22 @@ import com.raonsnc.scim.repo.rdb.ScimRdbScimService;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRepository {
-	public ScimRepositoryAdapter(DataSource data_source, ScimStorage storage) {
+public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRepositoryService {
+	final String name;
+	public ScimRepositoryAdapter(String name, DataSource data_source, ScimStorage storage) {
 		super(data_source, storage);
+		this.name = name;
+	}
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public String getName() {
-		return null;
+	public boolean test() throws ScimException {
+		return this.storage.testConnect();
 	}
-
 	@Override
 	public boolean open() throws ScimException {
 		return this.storage.testConnect();

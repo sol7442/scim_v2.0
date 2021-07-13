@@ -19,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.google.gson.GsonBuilder;
 import com.raonscn.scim.config.ConfigrationHandler;
 import com.raonsnc.scim.entity.ScimEntity;
-import com.raonsnc.scim.repo.ScimRepository;
+import com.raonsnc.scim.repo.ScimRepositoryService;
 import com.raonsnc.scim.repo.ScimRepositoryAdapter;
 import com.raonsnc.scim.repo.ScimStorage;
 import com.raonsnc.scim.repo.ScimStorageRegistry;
@@ -27,8 +27,7 @@ import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
 import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
-import com.raonsnc.scim.service.ScimRepositoryService;
-import com.raonsnc.scim.service.ScimService;
+import com.raonsnc.scim.service.ScimEntityService;
 import com.test.NewDataAccessEntity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +40,9 @@ public class ScimServiceEngineTest {
 	static String repository_adatper_file	= "../config/maria_adapter.yaml";
 	static String oacx_admin_resource_file	= "../out/oacx_admin_resource.json";
 	
-	static Map<String,ScimService> scim_engines = new HashMap<String, ScimService>();
+	static Map<String,ScimEntityService> scim_engines = new HashMap<String, ScimEntityService>();
 	static ScimRdbResourceSchema schema = null;
-	static ScimService service = null;
+	static ScimEntityService service = null;
 	
 	@BeforeAll
 	static public void initialize() {
@@ -54,13 +53,16 @@ public class ScimServiceEngineTest {
 			DataSource data_source = new ScimDataSourceBuilder().build(ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file));
 			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
 			
-			ScimRepository repository = new ScimRepositoryAdapter(data_source, stoage);
-			
-			service = new ScimRepositoryService(repository,schema);
+			ScimRepositoryService repository = new ScimRepositoryAdapter("oacx",data_source, stoage);
+			repository.open();
+			//service = new ScimRepositoryService(repository,schema);
 			scim_engines.put(schema.getName(), service);
 			
-			for (Entry<String, ScimService> scim_engine : scim_engines.entrySet()) {
-				log.debug("service open : {}-{}", scim_engine.getKey(), scim_engine.getValue().open());
+			for (Entry<String, ScimEntityService> scim_engine : scim_engines.entrySet()) {
+				String name = scim_engine.getKey();
+				ScimRepositoryService repository_service = 	(ScimRepositoryService)	scim_engine.getValue();
+				
+				log.debug("service open : {}-{}", name, repository_service.getSchemaList());
 			}	
 			
 		}catch (Exception e) {
@@ -72,9 +74,12 @@ public class ScimServiceEngineTest {
 	@AfterAll
 	static public void destroy() {
 		try {
-			for (Entry<String, ScimService> scim_engine : scim_engines.entrySet()) {
-				log.debug("service close : {}-{}", scim_engine.getKey() );
-				scim_engine.getValue().close();
+			for (Entry<String, ScimEntityService> scim_engine : scim_engines.entrySet()) {
+				String name = scim_engine.getKey();
+				ScimRepositoryService repository_service = 	(ScimRepositoryService)	scim_engine.getValue();
+				
+				log.debug("service open : {}-{}", name, repository_service.getSchemaList());
+				repository_service.close();
 			}	
 		}catch (Exception e) {
 			log.error(e.getMessage(),e);

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.raonscn.scim.config.ConfigrationHandler;
 import com.raonscn.scim.json.ScimJson;
 import com.raonsnc.scim.engine.ScimClassMaker;
-import com.raonsnc.scim.repo.ScimRepository;
+import com.raonsnc.scim.repo.ScimRepositoryService;
 import com.raonsnc.scim.repo.ScimRepositoryAdapter;
 import com.raonsnc.scim.repo.ScimStorage;
 import com.raonsnc.scim.repo.ScimStorageRegistry;
@@ -45,11 +45,11 @@ public class ConverterTest {
 	@Test
 	public void make_map_test() {
 		
-		ScimRepository repository = null;
+		ScimRepositoryService repository = null;
 		try {
 			DataSource data_source = new ScimDataSourceBuilder().build(ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file));
 			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
-			repository = new ScimRepositoryAdapter(data_source, stoage);
+			repository = new ScimRepositoryAdapter("test",data_source, stoage);
 			
 			if(repository.open()) {
 				log.info("connection : {}",true);

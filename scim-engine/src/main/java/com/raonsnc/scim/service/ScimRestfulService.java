@@ -6,9 +6,9 @@ import java.util.Map;
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.entity.ScimEntity;
 import com.raonsnc.scim.filter.ScimFilter;
-import com.raonsnc.scim.service.ScimService;
+import com.raonsnc.scim.service.ScimEntityService;
 
-public class ScimRestfulService implements ScimService{
+public class ScimRestfulService implements ScimEntityService{
 
 	@Override
 	public void create(ScimEntity entity) throws ScimException {
@@ -41,28 +41,34 @@ public class ScimRestfulService implements ScimService{
 	}
 
 	@Override
-	public Map<String, Object> query(String query) throws ScimException {
+	public String getName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public Map<String, Object> call(String query) throws ScimException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean open() throws ScimException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void close() throws ScimException {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public Map<String, Object> query(String query) throws ScimException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public Map<String, Object> call(String query) throws ScimException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public boolean open() throws ScimException {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+//
+//	@Override
+//	public void close() throws ScimException {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 
 }

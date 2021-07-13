@@ -9,8 +9,6 @@ import java.util.function.Consumer;
 import javax.sql.DataSource;
 
 import com.raonsnc.scim.ScimException;
-import com.raonsnc.scim.repo.conf.ConnectionPoolConfig;
-import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,6 @@ public class ScimStorageRegistry {
 				ScimStorageFactory factory = register.regist();
 				registry.put(factory.getName(), factory);
 				
-				
 				log.debug("factory regist : {}",register.regist());
 			}
 		});
@@ -50,24 +47,4 @@ public class ScimStorageRegistry {
 		}
 		throw new ScimException("STORAGE NOT FOUND : " + storage.getDriver());
 	}
-	
-	
-//	public DataSource create(DataSource config, String driver) throws ScimException{
-//		if(config == null)
-//			throw new ScimNullPointException("DATA SOURCE");
-//		
-//		HikariConfig hikari_config = new HikariConfig();
-//		try {
-//			Class.forName(driver);
-//
-////			hikari_config.setJdbcUrl( config.getUrl());
-////			hikari_config.setUsername(config.getUser());
-////			hikari_config.setPassword(config.getPasswd());
-//			
-//		} catch (ClassNotFoundException e) {
-//			throw new ScimException(e);
-//		}
-//
-//		return new HikariDataSource(hikari_config);
-//	}
 }

@@ -8,7 +8,7 @@ import java.io.IOException;
 import com.raonscn.scim.config.ConfigrationHandler;
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.ScimRepository;
+import com.raonsnc.scim.repo.ScimRepositoryService;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class MariaRepositoryTest extends AbstractRepositoryTest {
 	@Override
 	public void make_config_file() {
 		DataSourceConfig data_source = new DataSourceConfig();
-		data_source.setJdbcUrl(		"jdbc:mariadb://192.168.0.105:3306/oacx_stag");
+		data_source.setJdbcUrl(	"jdbc:mariadb://192.168.0.105:3306/oacx_stag");
 		data_source.setUser(	"root");
 		data_source.setPasswd(	"oacxpwd@1");
 		
@@ -68,7 +68,7 @@ public class MariaRepositoryTest extends AbstractRepositoryTest {
 	}
 
 	@Override
-	public ScimRepository getRepository() {
+	public ScimRepositoryService getRepository() {
 		// TODO Auto-generated method stub
 		return null;
 	}

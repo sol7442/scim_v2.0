@@ -1,5 +1,8 @@
 package com.raonsnc.scim.controller;
 
+import java.util.List;
+import java.util.Map.Entry;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,8 +22,14 @@ public class ScimEntityReadController {
 			@PathParam("entity") String entity,
 			@PathParam("id") String id) {
 		try {
+			log.info("{} : {}", entity,id);
+			for (Entry<String, List<String>> header : headers.getRequestHeaders().entrySet()) {
+				for(String value : header.getValue()) {
+					log.info(" - {} : {}", header.getKey(), value);					
+				}
+			}
+			;
 			
-			 
 			log.info("{} : {}", entity,id);
 			
 			

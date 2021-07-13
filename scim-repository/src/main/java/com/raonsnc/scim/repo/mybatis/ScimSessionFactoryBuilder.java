@@ -1,4 +1,4 @@
-package com.raonsnc.scim.repo;
+package com.raonsnc.scim.repo.mybatis;
 
 import javax.sql.DataSource;
 
@@ -11,6 +11,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 import com.raonsnc.scim.ScimException;
+import com.raonsnc.scim.repo.RepositoryLogger;
 
 import lombok.extern.slf4j.Slf4j;
 

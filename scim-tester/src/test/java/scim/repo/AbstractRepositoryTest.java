@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.raonsnc.scim.ScimException;
-import com.raonsnc.scim.repo.ScimRepository;
+import com.raonsnc.scim.repo.ScimRepositoryService;
 import com.raonsnc.scim.repo.ScimRepositoryAdapter;
 import com.raonsnc.scim.repo.ScimStorage;
 import com.raonsnc.scim.repo.ScimStorageRegistry;
@@ -37,16 +37,16 @@ public abstract class AbstractRepositoryTest {
 	public abstract void  make_config_file();
 	public abstract DataSourceConfig load_data_source_file();
 	public abstract StorageConfig load_adapter_config_file();
-	public abstract ScimRepository getRepository();// load_adapter_config_file();
+	public abstract ScimRepositoryService getRepository();// load_adapter_config_file();
 	
 	@Test
 	public void repository_test() throws ScimException {
-		ScimRepository repository = null;
+		ScimRepositoryService repository = null;
 		try {
 
 			DataSource data_source = new ScimDataSourceBuilder().build(load_data_source_file());
 			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, load_adapter_config_file());
-			repository = new ScimRepositoryAdapter(data_source, stoage);
+			repository = new ScimRepositoryAdapter("oacx",data_source, stoage);
 			
 			if(repository.open()) {
 				log.info("connection : {}",true);

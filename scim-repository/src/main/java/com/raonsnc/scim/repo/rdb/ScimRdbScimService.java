@@ -13,17 +13,18 @@ import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.entity.ScimEntity;
 import com.raonsnc.scim.entity.ScimIdentity;
 import com.raonsnc.scim.repo.ScimStorage;
+import com.raonsnc.scim.repo.ScimStorageService;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
-import com.raonsnc.scim.service.ScimService;
+import com.raonsnc.scim.service.ScimEntityService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class ScimRdbScimService implements ScimService {
+public abstract class ScimRdbScimService implements ScimEntityService, ScimStorageService {
 	protected DataSource 	source;
 	protected ScimStorage 	storage;
-	ScimRdbResourceSchema 		schema;
+	ScimRdbResourceSchema 	schema;
 
 	public ScimRdbScimService(DataSource source, ScimStorage storage) {
 		this.source 	= source;

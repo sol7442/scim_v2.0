@@ -1,8 +1,6 @@
 package com.raonsnc.scim.repo.rdb;
 
-import java.util.ArrayList;
 
-import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimSimpleAttributeSchema;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
