@@ -1,9 +1,13 @@
 package com.raonsnc.scim.repo.rdb;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.google.gson.GsonBuilder;
+import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
@@ -45,6 +49,23 @@ public class ScimRdbResourceSchema extends ScimResourceSchema {
 		return null;
 	}
 	
+	public static ScimRdbResourceSchema load(String fileName) throws ScimException, IOException {
+		FileReader reader = null;
+		try {
+			File file = new File(fileName);
+			if(file.exists()) {
+				reader = new FileReader(file);
+				return new GsonBuilder().create().fromJson(reader, ScimRdbResourceSchema.class);
+			}else {
+				throw new ScimException("file not found : " + fileName);
+			}
+		}catch (Exception e) {
+			throw new ScimException(e.getMessage(),e);
+		}finally {
+			if(reader != null)
+				reader.close();
+		}
+	}
 	public String toJson() {
 		new GsonBuilder().setPrettyPrinting().create();
 		return new GsonBuilder().setPrettyPrinting().create().toJson(this);

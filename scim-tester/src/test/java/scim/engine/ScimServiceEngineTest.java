@@ -27,7 +27,7 @@ import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
 import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
-import com.raonsnc.scim.service.ScimEntityService;
+import com.raonsnc.scim.service.ScimEntityAllService;
 import com.test.NewDataAccessEntity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +40,9 @@ public class ScimServiceEngineTest {
 	static String repository_adatper_file	= "../config/maria_adapter.yaml";
 	static String oacx_admin_resource_file	= "../out/oacx_admin_resource.json";
 	
-	static Map<String,ScimEntityService> scim_engines = new HashMap<String, ScimEntityService>();
+	static Map<String,ScimEntityAllService> scim_engines = new HashMap<String, ScimEntityAllService>();
 	static ScimRdbResourceSchema schema = null;
-	static ScimEntityService service = null;
+	static ScimEntityAllService service = null;
 	
 	@BeforeAll
 	static public void initialize() {
@@ -58,7 +58,7 @@ public class ScimServiceEngineTest {
 			//service = new ScimRepositoryService(repository,schema);
 			scim_engines.put(schema.getName(), service);
 			
-			for (Entry<String, ScimEntityService> scim_engine : scim_engines.entrySet()) {
+			for (Entry<String, ScimEntityAllService> scim_engine : scim_engines.entrySet()) {
 				String name = scim_engine.getKey();
 				ScimRepositoryService repository_service = 	(ScimRepositoryService)	scim_engine.getValue();
 				
@@ -74,7 +74,7 @@ public class ScimServiceEngineTest {
 	@AfterAll
 	static public void destroy() {
 		try {
-			for (Entry<String, ScimEntityService> scim_engine : scim_engines.entrySet()) {
+			for (Entry<String, ScimEntityAllService> scim_engine : scim_engines.entrySet()) {
 				String name = scim_engine.getKey();
 				ScimRepositoryService repository_service = 	(ScimRepositoryService)	scim_engine.getValue();
 				

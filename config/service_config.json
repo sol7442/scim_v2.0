@@ -1,0 +1,9 @@
+{
+  "services": {
+    "entity.read": {
+      "name": "entity.read",
+      "type": "entity",
+      "className": "ScimEntityReadResourceService"
+    }
+  }
+}

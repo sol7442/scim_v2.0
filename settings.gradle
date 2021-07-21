@@ -17,7 +17,7 @@ include "scim-repository:scim-repository-mysql"
 include "scim-repository:scim-repository-maria"
 include "scim-repository:scim-repository-oracle"
 
-include "scim-represent"
+//include "scim-represent"
 
 include "scim-engine"
 

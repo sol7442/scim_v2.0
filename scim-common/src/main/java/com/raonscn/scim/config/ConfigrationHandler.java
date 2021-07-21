@@ -38,7 +38,7 @@ public class ConfigrationHandler {
 		}
 	}
 	
-	public void save(ScimConfig config, String file_name) throws IOException{
+	public void save(ScimConfiguration config, String file_name) throws IOException{
 		try {
 			DumperOptions options = new DumperOptions();
 			options.setDefaultFlowStyle(FlowStyle.BLOCK);

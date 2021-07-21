@@ -1,0 +1,39 @@
+package ${packageName};
+
+<#list packages as package>
+import ${package};
+</#list>  
+
+public class ${className} extends ${superClass} implements <#list interfaces as interface>${interface} <#sep>,</#list> {
+	private static final long serialVersionUID = ${serialVersion?c}L;
+  
+  <#list attributes as attr>
+    // ${attr.description}  ;
+    public static final String ${attr.name?upper_case} = "${attr.name}";
+    
+  </#list>
+  
+	@Override
+	public void transOut(ScimEntity entity) throws ScimException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ScimEntity transIn() throws ScimException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ScimMeta getMeta() throws ScimException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMeta(ScimEntity entity) throws ScimException {
+		// TODO Auto-generated method stub
+		
+	}  
+}

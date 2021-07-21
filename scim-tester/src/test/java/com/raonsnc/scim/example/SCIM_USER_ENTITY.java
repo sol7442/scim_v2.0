@@ -4,7 +4,7 @@ import java.util.HashMap;
 import com.raonsnc.scim.entity.ScimEntity;
 
 public class SCIM_USER_ENTITY extends HashMap<String, Object> implements ScimEntity  {
-	private static final long serialVersionUID = -3110925682015451036L;
+	private static final long serialVersionUID = -6548176865339814559L;
   
     //   ;
     public static final String UPDATE_TIME = "update_time";

@@ -10,13 +10,14 @@ import javax.sql.DataSource;
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.entity.ScimEntity;
 import com.raonsnc.scim.filter.ScimFilter;
-import com.raonsnc.scim.repo.rdb.ScimRdbScimService;
+import com.raonsnc.scim.repo.rdb.ScimRdbService;
 import com.raonsnc.scim.schema.ScimAttributeSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
 
-public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRepositoryService {
-	final String name;
+public class ScimRepositoryAdapter extends ScimRdbService implements ScimRepositoryService {
+	String name;
+	String type;
 	public ScimRepositoryAdapter(String name, DataSource data_source, ScimStorage storage) {
 		super(data_source, storage);
 		this.name = name;
@@ -25,7 +26,11 @@ public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRep
 	public String getName() {
 		return name;
 	}
-
+	@Override
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	@Override
 	public boolean test() throws ScimException {
 		return this.storage.testConnect();
@@ -84,5 +89,4 @@ public class ScimRepositoryAdapter extends ScimRdbScimService implements ScimRep
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

@@ -6,7 +6,7 @@ dependencies {
 	implementation project(":scim-engine")
 	implementation project(":scim-repository:scim-repository-mysql")
 	implementation project(":scim-repository:scim-repository-maria")
-	implementation project(":scim-represent")
+	//implementation project(":scim-represent")
 	
 	implementation 		group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.2'
 	

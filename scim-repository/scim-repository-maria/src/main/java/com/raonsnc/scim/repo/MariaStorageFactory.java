@@ -2,7 +2,7 @@ package com.raonsnc.scim.repo;
 
 import javax.sql.DataSource;
 
-import com.raonsnc.scim.repo.conf.ConnectionPoolConfig;
+import com.raonsnc.scim.repo.conf.ConnectionConfig;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 

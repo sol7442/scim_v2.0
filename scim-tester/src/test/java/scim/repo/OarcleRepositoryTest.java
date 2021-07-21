@@ -20,7 +20,7 @@ public class OarcleRepositoryTest extends AbstractRepositoryTest{
 	@Override
 	public void make_config_file() {
 		DataSourceConfig data_source = new DataSourceConfig();
-		data_source.setUrl(		"jdbc:oracle:thin:@192.168.0.105:1521:xe");
+		data_source.setJdbcUrl(		"jdbc:oracle:thin:@192.168.0.105:1521:xe");
 		data_source.setUser(	"oacx");
 		data_source.setPasswd(	"1q2w3e4r!@");
 		
