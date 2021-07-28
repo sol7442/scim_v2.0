@@ -18,14 +18,14 @@ import com.raonscn.scim.config.ConfigrationHandler;
 import com.raonscn.scim.json.ScimJson;
 import com.raonsnc.scim.engine.ScimClassMaker;
 import com.raonsnc.scim.repo.ScimRepositoryService;
-import com.raonsnc.scim.repo.ScimRepositoryAdapter;
-import com.raonsnc.scim.repo.ScimStorage;
-import com.raonsnc.scim.repo.ScimStorageRegistry;
+import com.raonsnc.scim.repo.ScimEntitySchema;
+import com.raonsnc.scim.repo.DataStorage;
+import com.raonsnc.scim.repo.DataStorageRegistry;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
-import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.repo.impl.ScimDataSourceBuilder;
+import com.raonsnc.scim.repo.impl.ScimRepositoryAdapter;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class ConverterTest {
 	
 	@BeforeEach
 	public void initialize() {
-		ScimStorageRegistry.getInstance().initialize();
+		DataStorageRegistry.getInstance().initialize();
 	}
 	
 	@Test
@@ -48,7 +48,7 @@ public class ConverterTest {
 		ScimRepositoryService repository = null;
 		try {
 			DataSource data_source = new ScimDataSourceBuilder().build(ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file));
-			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
+			DataStorage stoage = DataStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
 			repository = new ScimRepositoryAdapter("test",data_source, stoage);
 			
 			if(repository.open()) {
@@ -58,16 +58,16 @@ public class ConverterTest {
 					log.info(" -{}",schema_name);
 					List<ScimResourceSchema> resource_list = repository.getResourceSchemaList(schema_name);
 					for (ScimResourceSchema res : resource_list) {
-						ScimRdbResourceSchema resource = (ScimRdbResourceSchema)res;
+						ScimEntitySchema resource = (ScimEntitySchema)res;
 						
 						
 						log.info(" --{}",resource);
 						if("OACX_ADMIN".equals(resource.getStorageName())) {
 							repository.findAttributeSchema(resource);
 							
-							List<ScimAttributeSchema> attribute_list_1 = new ArrayList<ScimAttributeSchema>();
-							Map<String,ScimAttributeSchema> attributes_1 = resource.getAttributes();
-							for (Entry<String, ScimAttributeSchema> entry : attributes_1.entrySet()) {
+							List<ScimResourceAttribute> attribute_list_1 = new ArrayList<ScimResourceAttribute>();
+							Map<String,ScimResourceAttribute> attributes_1 = resource.getAttributes();
+							for (Entry<String, ScimResourceAttribute> entry : attributes_1.entrySet()) {
 								log.info(" ---{}:{}",entry.getKey(),entry.getValue());
 								attribute_list_1.add(entry.getValue());
 							}
@@ -114,7 +114,7 @@ public class ConverterTest {
 							
 							identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 							
-							List<ScimAttributeSchema> identity_attributes = new ArrayList<ScimAttributeSchema>();
+							List<ScimResourceAttribute> identity_attributes = new ArrayList<ScimResourceAttribute>();
 							identity_attributes.add(attributes_1.get("id"));
 							//identity_attributes.add(attributes_1.get("name"));
 							identity_class_maker.setAttributesSize(1);
@@ -137,12 +137,12 @@ public class ConverterTest {
 //							log.info("{}","--------------------------------------------------------------");
 //							log.info("{}",new ScimJson().toJson(resource,ScimResourceSchema.class));
 
-							log.info("{}",new ScimJson().toJson(resource,ScimRdbResourceSchema.class));
+							log.info("{}",new ScimJson().toJson(resource,ScimEntitySchema.class));
 							log.info("{}","--------------------------------------------------------------");
 							log.info("{}",new ScimJson().toJson(resource,ScimResourceSchema.class));
 							
 							FileWriter writer = new FileWriter(new File(oacx_admin_resource_file));
-							writer.write(new ScimJson().toJson(resource,ScimRdbResourceSchema.class));
+							writer.write(new ScimJson().toJson(resource,ScimEntitySchema.class));
 							writer.close();
 							
 							//repository.addResourceType(scim_resource_type);

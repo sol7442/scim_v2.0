@@ -26,20 +26,20 @@ import com.raonsnc.scim.entity.ScimEntity;
 import com.raonsnc.scim.entity.ScimMeta;
 import com.raonsnc.scim.entity.ScimSimpleTransfer;
 import com.raonsnc.scim.repo.ScimRepositoryService;
-import com.raonsnc.scim.repo.ScimRepositoryAdapter;
-import com.raonsnc.scim.repo.ScimStorage;
-import com.raonsnc.scim.repo.ScimStorageRegistry;
+import com.raonsnc.scim.repo.ScimSimpleIdentity;
+import com.raonsnc.scim.repo.ScimEntitySchema;
+import com.raonsnc.scim.repo.DataStorage;
+import com.raonsnc.scim.repo.DataStorageRegistry;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
-import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
+import com.raonsnc.scim.repo.impl.ScimDataSourceBuilder;
+import com.raonsnc.scim.repo.impl.ScimRepositoryAdapter;
 import com.raonsnc.scim.represent.ScimRepresentAttributeSchema;
 import com.raonsnc.scim.represent.ScimRepresentResourceSchema;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimMetaSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
-import com.raonsnc.scim.schema.ScimSimpleAttributeSchema;
-import com.raonsnc.scim.schema.ScimSimpleIdentitySchema;
+import com.raonsnc.scim.schema.ScimSimpleAttribute;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 	static String scim_user_workspace = "./src/test/java/";
 	static String scim_user_package = "com.raonsnc.scim.example";
 
-	static String scim_user_rdb_schema_file = "../out/scim_user_rdb_schema.json";
+	static String scim_user_entity_schema_file = "../out/scim_user_entity_schema.json";
 	static String scim_user_identity_file = "../out/scim_user_identity.json";
 	static String scim_user_entity_class = "SCIM_USER_ENTITY";
 	static String scim_user_identity_class = "SCIM_USER_IDENTITY";
@@ -68,22 +68,22 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 
 	static String scim_user_represent_class = "SCIM_USER_REPRESENT";
 
-	static String scim_user_table_name = "SCIM_USER";
-	static String scim_owner_name = "scim";
+	static String scim_user_table_name  = "SCIM_USER";
+	static String scim_user_schmea_name = "scim";
 
 	static ScimMetaSchema meta;
-	static ScimRdbResourceSchema rdb_schema;
+	static ScimEntitySchema entity_schema;
 	static ScimResourceSchema schema;
 	static ScimRepositoryService repository;
 
 	@BeforeAll
 	static public void initialize() {
 		try {
-			ScimStorageRegistry.getInstance().initialize();
+			DataStorageRegistry.getInstance().initialize();
 
 			DataSource data_source = new ScimDataSourceBuilder()
 					.build(ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file));
-			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source,
+			DataStorage stoage = DataStorageRegistry.getInstance().create(data_source,
 					ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file));
 			repository = new ScimRepositoryAdapter("oacx", data_source, stoage);
 
@@ -105,46 +105,49 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 
 	@Test
 	@Order(1)
-	public void rdb_repository_schema_generate_test() {
+	public void entity_schema_generate_test() {
 		try {
 
 			List<String> schema_list = repository.getSchemaList();
 			for (String schema_name : schema_list) {
-				log.info(" -{}", schema_name);
-				List<ScimResourceSchema> resource_list = repository.getResourceSchemaList(schema_name);
-				for (ScimResourceSchema res : resource_list) {
-					ScimRdbResourceSchema resource = (ScimRdbResourceSchema) res;
-
-					if (scim_user_table_name.equals(resource.getStorageName())
-							&& scim_owner_name.equals(resource.getStorageOwner())) {
-						rdb_schema = (ScimRdbResourceSchema) res;
-
-						repository.findAttributeSchema(rdb_schema);
-
-						log.info(" --{}\n{}", rdb_schema, rdb_schema.toJson());
-
-						rdb_schema.setId(UUID.randomUUID().toString());
-						rdb_schema.setName("ScimUser");
-						rdb_schema.setDescription("Scim User REPOSITORY SCHEMA");
-
-						FileWriter writer = new FileWriter(new File(scim_user_rdb_schema_file));
-						writer.write(new ScimJson().toJson(rdb_schema, ScimRdbResourceSchema.class));
-						writer.close();
-					}
-				}
+				log.info(" schema : {}", schema_name);
 			}
+			repository.getEntitySchema("","");
+			
+			
+//				List<ScimEntitySchema> entity_list = repository.getEntitySchemaList(schema_name);
+				
+//				for (ScimEntitySchema entity : entity_list) {
+//
+//					if (scim_user_table_name.equals(entity.getStorageName()) && scim_user_schmea_name.equals(entity.getStorageSchema())) {
+//						entity_schema = entity;//(ScimEntitySchema) res;
+//
+//						repository.findAttributeSchema(entity_schema);
+//						
+//						entity_schema.setId(UUID.randomUUID().toString());
+//						entity_schema.setName("ScimUser");
+//						entity_schema.setDescription("Scim User REPOSITORY SCHEMA");
+//						
+//						log.info(" --{}\n{}", entity_schema, entity_schema.toJson());
+//
+//						FileWriter writer = new FileWriter(new File(scim_user_entity_schema_file));
+//						writer.write(new ScimJson().toJson(entity_schema, ScimEntitySchema.class));
+//						writer.close();
+//					}
+//				}
+//			}
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
-	@Test
+	//@Test
 	@Order(2)
 	public void scim_identity_schema_generate_test() {
 		try {
 			// mapper
-			ScimSimpleIdentitySchema identity = new ScimSimpleIdentitySchema(rdb_schema.getAttribute("id"));
+			ScimSimpleIdentity identity = new ScimSimpleIdentity(entity_schema.getAttribute("id"));
 			{
 				identity.setName("id");
 				identity.setDescription("identity");
@@ -154,7 +157,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 			log.info(" -?-{}\n{}", identity, identity.toJson());
 
 			FileWriter writer = new FileWriter(new File(scim_user_identity_file));
-			writer.write(new ScimJson().toJson(identity, ScimSimpleIdentitySchema.class));
+			writer.write(new ScimJson().toJson(identity, ScimSimpleIdentity.class));
 			writer.close();
 
 		} catch (Exception e) {
@@ -162,12 +165,12 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 		}
 	}
 
-	@Test
+	//@Test
 	@Order(3)
 	public void rdb_entity_class_generate_test() {
 		try {
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : rdb_schema.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : entity_schema.getAttributes().entrySet()) {
 				attribute_list.add(entry.getValue());
 			}
 
@@ -195,12 +198,12 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 		}
 	}
 
-	@Test
+	//@Test
 	@Order(4)
 	public void rdb_idnetity_class_generate_test() {
 		try {
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : rdb_schema.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : entity_schema.getAttributes().entrySet()) {
 				attribute_list.add(entry.getValue());
 			}
 
@@ -221,8 +224,8 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 
 			identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 
-			List<ScimAttributeSchema> identity_attributes = new ArrayList<ScimAttributeSchema>();
-			identity_attributes.add(rdb_schema.getAttribute("id"));
+			List<ScimResourceAttribute> identity_attributes = new ArrayList<ScimResourceAttribute>();
+			identity_attributes.add(entity_schema.getAttribute("id"));
 			identity_class_maker.setAttributesSize(1);
 
 			identity_class_maker.setAttributes(identity_attributes);
@@ -237,13 +240,13 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 		}
 	}
 
-	@Test
+	//@Test
 	@Order(5)
 	public void scim_meta_schema_generate_test() {
 		try {
 			// mapper
 			meta = new ScimMetaSchema();
-			ScimSimpleAttributeSchema created = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute created = new ScimSimpleAttribute();
 			{
 				created.setName("created");
 				created.setDescription("created time");
@@ -254,7 +257,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 				created.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 
 			}
-			ScimSimpleAttributeSchema lastModify = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute lastModify = new ScimSimpleAttribute();
 			{
 				lastModify.setName("lastModify");
 				lastModify.setDescription("modified time");
@@ -264,7 +267,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 				lastModify.setReturned(ScimTypeDefinition.Returned.DEFAULT.value());
 				lastModify.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema resourceType = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute resourceType = new ScimSimpleAttribute();
 			{
 				resourceType.setName("resourceType");
 				resourceType.setDescription("resource type");
@@ -274,7 +277,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 				resourceType.setReturned(ScimTypeDefinition.Returned.ALWAYS.value());
 				resourceType.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema version = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute version = new ScimSimpleAttribute();
 			{
 				version.setName("version");
 				version.setDescription("resource version");
@@ -284,7 +287,7 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 				version.setReturned(ScimTypeDefinition.Returned.DEFAULT.value());
 				version.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema location = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute location = new ScimSimpleAttribute();
 			{
 				location.setName("location");
 				location.setDescription("resource http url");
@@ -304,24 +307,24 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 
 			log.info(" -?-{}\n{}", meta, meta.toJson());
 
-//			FileWriter writer = new FileWriter(new File(scim_user_meta_file));
-//			writer.write(new ScimJson().toJson(meta, ScimMetaSchema.class));
-//			writer.close();
+			FileWriter writer = new FileWriter(new File(scim_user_meta_file));
+			writer.write(new ScimJson().toJson(meta, ScimMetaSchema.class));
+			writer.close();
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
-	@Test
+	//@Test
 	@Order(6)
 	public void scim_resource_schema_generate_test() {
 		try {
 			schema = new ScimResourceSchema();
-			for (Entry<String, ScimAttributeSchema> entry : rdb_schema.getAttributes().entrySet()) {
-				ScimAttributeSchema attribute = new ScimAttributeSchema(entry.getValue());
+			for (Entry<String, ScimResourceAttribute> entry : entity_schema.getAttributes().entrySet()) {
+				ScimResourceAttribute attribute = new ScimResourceAttribute(entry.getValue());
 
-				ScimAttributeSchema represent_attribute = new ScimAttributeSchema(attribute);
+				ScimResourceAttribute represent_attribute = new ScimResourceAttribute(attribute);
 				int index_ = attribute.getName().lastIndexOf("_");
 				if (index_ > 0) {
 					represent_attribute.setName(attribute.getName().toLowerCase().substring(0, index_));
@@ -356,8 +359,8 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 
 			ScimClassMaker entity_class_maker = new ScimClassMaker();
 
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : schema.getAttributes().entrySet()) {
 				ScimRepresentAttributeSchema attribute = new ScimRepresentAttributeSchema(entry.getValue());
 				attribute_list.add(attribute);
 			}
@@ -424,13 +427,13 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 //		}
 //	}
 
-	@Test
+	//@Test
 	@Order(8)
 	public void scim_transfer_class_generate_test() {
 		try {
 
 			ScimResourceSchema res_schema = ScimResourceSchema.load(scim_user_schema_file );
-			ScimRdbResourceSchema rdb_schema = ScimRdbResourceSchema.load(scim_user_rdb_schema_file);
+			ScimEntitySchema rdb_schema = ScimEntitySchema.load(scim_user_entity_schema_file);
 
 			
 			makeMetaClass(		res_schema,rdb_schema );
@@ -440,11 +443,11 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 			log.error(e.getMessage(), e);
 		}
 	}
-	private void makeMetaClass(ScimResourceSchema res_schema, ScimRdbResourceSchema rdb_schema) throws ScimException {
+	private void makeMetaClass(ScimResourceSchema res_schema, ScimEntitySchema rdb_schema) throws ScimException {
 		
 		log.debug("meta : {}", res_schema.getMeta()); 
 		
-		List<ScimAttributeSchema> attribute_list = res_schema.getMeta().getSubAttributes();
+		List<ScimResourceAttribute> attribute_list = res_schema.getMeta().getSubAttributes();
 		
 		ScimClassMaker entity_class_maker = new ScimClassMaker();
 		entity_class_maker.setWorkspace(scim_user_workspace);
@@ -468,10 +471,10 @@ public class ScimSchemaGeneratorTest_SCIM_USER {
 		entity_class_maker.setTemplateFile("meta_template.tflh");
 		entity_class_maker.make();
 	}
-	private void makeTransferClass(ScimResourceSchema res_schema, ScimRdbResourceSchema rdb_schema) throws ScimException {
+	private void makeTransferClass(ScimResourceSchema res_schema, ScimEntitySchema rdb_schema) throws ScimException {
 		
-		List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-		for (Entry<String, ScimAttributeSchema> entry : res_schema.getAttributes().entrySet()) {
+		List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+		for (Entry<String, ScimResourceAttribute> entry : res_schema.getAttributes().entrySet()) {
 			ScimRepresentAttributeSchema attribute = new ScimRepresentAttributeSchema(entry.getValue());
 
 			attribute_list.add(attribute);

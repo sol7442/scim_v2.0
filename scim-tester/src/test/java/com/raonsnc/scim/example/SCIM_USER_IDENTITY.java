@@ -7,23 +7,6 @@ import com.raonsnc.scim.entity.ScimIdentity;
 import com.raonsnc.scim.entity.ScimEntity;
 
 public class SCIM_USER_IDENTITY extends HashMap<String, Object> implements ScimIdentity  {
-	private static final long serialVersionUID = -290593854342019505L;
+	private static final long serialVersionUID = -1499757769063839788L;
   
-    //   ;
-    public static final String ID = "id";
-    
-  
-  	@Override
-	public void parse(String identity) throws ScimException{
-  		put("id", DataConverter.toString(identity));
-	}
-	@Override
-	public void parse(ScimEntity entity) throws ScimException {
-   		put("id",entity.get("id")); 
-	}
-	
-	@Override
-	public String bind() throws ScimException{
-  		return DataConverter.toString(get("id"));
-	}
-}
+    // 

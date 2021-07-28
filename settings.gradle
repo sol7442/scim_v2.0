@@ -21,6 +21,17 @@ include "scim-repository:scim-repository-oracle"
 
 include "scim-engine"
 
+include "scim-service"
+include "scim-service:scim-resource-service"
+include "scim-service:scim-subscriber-service"
+include "scim-service:scim-publisher-service"
+include "scim-service:scim-policy-service"
+include "scim-service:scim-scheduler-service"
+include "scim-service:scim-config-service"
+include "scim-service:scim-admin-service"
+include "scim-service:scim-workflow-service"
+include "scim-service:scim-self-service"
+
 include "scim-agent"
 include "scim-manager"
 

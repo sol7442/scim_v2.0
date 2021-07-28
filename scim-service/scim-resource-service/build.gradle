@@ -1,0 +1,7 @@
+//scim-resource-service
+
+dependencies {
+	implementation project(":scim-service")
+	
+	implementation group: 'org.glassfish.hk2.external', name: 'javax.inject', version: '2.2.0'
+}

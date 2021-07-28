@@ -7,7 +7,7 @@ import com.raonsnc.scim.entity.ScimMeta;
 import com.raonsnc.scim.entity.ScimEntity;
 
 public class SCIM_USER_TRANSFER extends HashMap<String, Object> implements ScimSimpleTransfer  {
-	private static final long serialVersionUID = -7285044779332055514L;
+	private static final long serialVersionUID = -1937721226915590405L;
   
     //   ;
     public static final String PHON = "phon";

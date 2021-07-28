@@ -22,19 +22,19 @@ public class ScimResourceSchema {
 	public String name;
 	public String description;
 
-	public Map<String, ScimAttributeSchema> attributes;
+	public Map<String, ScimResourceAttribute> attributes;
 	
-	public void addAttribute(ScimAttributeSchema attribute) {
+	public void addAttribute(ScimResourceAttribute attribute) {
 		if(attributes == null) {
-			attributes = new HashMap<String, ScimAttributeSchema>();
+			attributes = new HashMap<String, ScimResourceAttribute>();
 		}
 		this.attributes.put(attribute.getName(), attribute);
 	}
 	public ScimMetaSchema getMeta() {
 		ScimMetaSchema meta_schema = null;
-		ScimAttributeSchema  meta_attribute = this.attributes.get("meta");
+		ScimResourceAttribute  meta_attribute = this.attributes.get("meta");
 		if(meta_attribute != null) {
-			meta_schema = new ScimMetaSchema(meta_attribute);
+			meta_schema = new ScimMetaSchema((ScimComplexAttribute) meta_attribute);
 		}
 		
 		return meta_schema;

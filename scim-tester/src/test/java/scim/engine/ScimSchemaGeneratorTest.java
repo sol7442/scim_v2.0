@@ -21,20 +21,20 @@ import com.raonscn.scim.config.ConfigrationHandler;
 import com.raonscn.scim.json.ScimJson;
 import com.raonsnc.scim.engine.ScimClassMaker;
 import com.raonsnc.scim.repo.ScimRepositoryService;
-import com.raonsnc.scim.repo.ScimRepositoryAdapter;
-import com.raonsnc.scim.repo.ScimStorage;
-import com.raonsnc.scim.repo.ScimStorageRegistry;
+import com.raonsnc.scim.repo.ScimSimpleIdentity;
+import com.raonsnc.scim.repo.ScimEntitySchema;
+import com.raonsnc.scim.repo.DataStorage;
+import com.raonsnc.scim.repo.DataStorageRegistry;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
-import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
+import com.raonsnc.scim.repo.impl.ScimDataSourceBuilder;
+import com.raonsnc.scim.repo.impl.ScimRepositoryAdapter;
 import com.raonsnc.scim.represent.ScimRepresentAttributeSchema;
 import com.raonsnc.scim.represent.ScimRepresentResourceSchema;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimMetaSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
-import com.raonsnc.scim.schema.ScimSimpleAttributeSchema;
-import com.raonsnc.scim.schema.ScimSimpleIdentitySchema;
+import com.raonsnc.scim.schema.ScimSimpleAttribute;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,16 +63,16 @@ public class ScimSchemaGeneratorTest {
 	
 	
 	
-	static ScimRdbResourceSchema schema;
+	static ScimEntitySchema schema;
 	static ScimRepresentResourceSchema represent;
 	static ScimRepositoryService repository;
 	@BeforeAll
 	static public void initialize() {
 		try {
-			ScimStorageRegistry.getInstance().initialize();
+			DataStorageRegistry.getInstance().initialize();
 			
 			DataSource data_source = new ScimDataSourceBuilder().build(ConfigrationHandler.getInstance().load(DataSourceConfig.class, repository_config_file));
-			ScimStorage stoage = ScimStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
+			DataStorage stoage = DataStorageRegistry.getInstance().create(data_source, ConfigrationHandler.getInstance().load(StorageConfig.class, repository_adatper_file ));
 			repository = new ScimRepositoryAdapter("oacx",data_source, stoage);
 			
 			repository.open();
@@ -100,10 +100,10 @@ public class ScimSchemaGeneratorTest {
 				log.info(" -{}",schema_name);
 				List<ScimResourceSchema> resource_list = repository.getResourceSchemaList(schema_name);
 				for (ScimResourceSchema res : resource_list) {
-					ScimRdbResourceSchema resource = (ScimRdbResourceSchema)res;
+					ScimEntitySchema resource = (ScimEntitySchema)res;
 					
 					if("OACX_ADMIN".equals(resource.getStorageName()) && "oacx".equals(resource.getStorageOwner())) {
-						schema = (ScimRdbResourceSchema)res;
+						schema = (ScimEntitySchema)res;
 						
 						repository.findAttributeSchema(schema);
 						
@@ -114,7 +114,7 @@ public class ScimSchemaGeneratorTest {
 						schema.setDescription("OACX ADMIN REPOSITORY SCHEMA");
 						
 						FileWriter writer = new FileWriter(new File(oacx_admin_repository_file));
-						writer.write(new ScimJson().toJson(schema,ScimRdbResourceSchema.class));
+						writer.write(new ScimJson().toJson(schema,ScimEntitySchema.class));
 						writer.close();
 					}
 				}
@@ -128,7 +128,7 @@ public class ScimSchemaGeneratorTest {
 	public void scim_identity_schema_generate_test() {
 		try {
 			// mapper
-			ScimSimpleIdentitySchema identity = new ScimSimpleIdentitySchema(schema.getAttribute("id"));
+			ScimSimpleIdentity identity = new ScimSimpleIdentity(schema.getAttribute("id"));
 			{
 				identity.setName("id");
 				identity.setDescription("identity");
@@ -139,7 +139,7 @@ public class ScimSchemaGeneratorTest {
 			log.info(" -?-{}\n{}",identity,identity.toJson());
 			
 			FileWriter writer = new FileWriter(new File(oacx_admin_identity_file));
-			writer.write(new ScimJson().toJson(identity,ScimSimpleIdentitySchema.class));
+			writer.write(new ScimJson().toJson(identity,ScimSimpleIdentity.class));
 			writer.close();
 			
 		}catch (Exception e) {
@@ -152,8 +152,8 @@ public class ScimSchemaGeneratorTest {
 	@Test @Order(3)
 	public void rdb_entity_class_generate_test() {
 		try {
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : schema.getAttributes().entrySet()) {
 				attribute_list.add(entry.getValue());
 			}
 			
@@ -194,8 +194,8 @@ public class ScimSchemaGeneratorTest {
 	@Test @Order(4)
 	public void rdb_idnetity_class_generate_test() {
 		try {
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : schema.getAttributes().entrySet()) {
 				attribute_list.add(entry.getValue());
 			}
 			
@@ -218,7 +218,7 @@ public class ScimSchemaGeneratorTest {
 			
 			identity_class_maker.setSerialVersion(UUID.randomUUID().getMostSignificantBits());
 			
-			List<ScimAttributeSchema> identity_attributes = new ArrayList<ScimAttributeSchema>();
+			List<ScimResourceAttribute> identity_attributes = new ArrayList<ScimResourceAttribute>();
 			identity_attributes.add(schema.getAttribute("id"));
 			identity_class_maker.setAttributesSize(1);
 			
@@ -239,10 +239,10 @@ public class ScimSchemaGeneratorTest {
 		try {
 			represent = new ScimRepresentResourceSchema();
 
-			for (Entry<String, ScimAttributeSchema> entry : schema.getAttributes().entrySet()) {
-				ScimAttributeSchema attribute = new ScimAttributeSchema(entry.getValue());
+			for (Entry<String, ScimResourceAttribute> entry : schema.getAttributes().entrySet()) {
+				ScimResourceAttribute attribute = new ScimResourceAttribute(entry.getValue());
 				
-				ScimAttributeSchema represent_attribute = new ScimAttributeSchema(attribute);
+				ScimResourceAttribute represent_attribute = new ScimResourceAttribute(attribute);
 				int index_ = attribute.getName().lastIndexOf("_");
 				if(index_ > 0) {
 					represent_attribute.setName(attribute.getName().toLowerCase().substring(0,index_));
@@ -278,7 +278,7 @@ public class ScimSchemaGeneratorTest {
 		try {
 			// mapper
 			ScimMetaSchema meta = new ScimMetaSchema();
-			ScimSimpleAttributeSchema created      = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute created      = new ScimSimpleAttribute();
 			{
 				created.setName("created");
 				created.setDescription("created time");
@@ -289,7 +289,7 @@ public class ScimSchemaGeneratorTest {
 				created.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 				
 			}
-			ScimSimpleAttributeSchema lastModify   = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute lastModify   = new ScimSimpleAttribute();
 			{
 				lastModify.setName("lastModify");
 				lastModify.setDescription("modified time");
@@ -299,7 +299,7 @@ public class ScimSchemaGeneratorTest {
 				lastModify.setReturned(ScimTypeDefinition.Returned.DEFAULT.value());
 				lastModify.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema resourceType = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute resourceType = new ScimSimpleAttribute();
 			{
 				resourceType.setName("resourceType");
 				resourceType.setDescription("resource type");
@@ -309,7 +309,7 @@ public class ScimSchemaGeneratorTest {
 				resourceType.setReturned(ScimTypeDefinition.Returned.ALWAYS.value());
 				resourceType.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema version 	 = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute version 	 = new ScimSimpleAttribute();
 			{
 				version.setName("version");
 				version.setDescription("resource version");
@@ -319,7 +319,7 @@ public class ScimSchemaGeneratorTest {
 				version.setReturned(ScimTypeDefinition.Returned.DEFAULT.value());
 				version.setUniqueness(ScimTypeDefinition.Uniqueness.none.name());
 			}
-			ScimSimpleAttributeSchema location 	 = new ScimSimpleAttributeSchema();
+			ScimSimpleAttribute location 	 = new ScimSimpleAttribute();
 			{
 				location.setName("location");
 				location.setDescription("resource http url");
@@ -355,8 +355,8 @@ public class ScimSchemaGeneratorTest {
 
 			ScimClassMaker entity_class_maker = new ScimClassMaker();
 			
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : represent.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : represent.getAttributes().entrySet()) {
 				ScimRepresentAttributeSchema attribute = new ScimRepresentAttributeSchema(entry.getValue());
 				attribute_list.add(attribute);
 			}
@@ -390,8 +390,8 @@ public class ScimSchemaGeneratorTest {
 
 			ScimClassMaker entity_class_maker = new ScimClassMaker();
 			
-			List<ScimAttributeSchema> attribute_list = new ArrayList<ScimAttributeSchema>();
-			for (Entry<String, ScimAttributeSchema> entry : represent.getAttributes().entrySet()) {
+			List<ScimResourceAttribute> attribute_list = new ArrayList<ScimResourceAttribute>();
+			for (Entry<String, ScimResourceAttribute> entry : represent.getAttributes().entrySet()) {
 				ScimRepresentAttributeSchema attribute = new ScimRepresentAttributeSchema(entry.getValue());
 				attribute_list.add(attribute);
 			}

@@ -1,8 +1,4 @@
 !!com.raonsnc.scim.config.ScimAgentConfig
-dataSource:
-  jdbcUrl: jdbc:mariadb://192.168.0.105:3306/scim
-  passwd: 1q2w3e4r!@
-  user: scim
 idleTime: 600000
 name: local.yong
 paths:

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.raonsnc.scim.ScimException;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import freemarker.template.Configuration;
@@ -40,7 +40,7 @@ public class ScimClassMaker {
 
 	long serialVersion;
 	
-	List<ScimAttributeSchema> attributes;
+	List<ScimResourceAttribute> attributes;
 	int attributesSize;
 	String templateFile;
 	

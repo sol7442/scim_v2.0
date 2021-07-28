@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.GsonBuilder;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimMetaSchema;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 
@@ -21,9 +21,9 @@ public class ScimRepresentResourceSchema extends ScimResourceSchema{
 	String mappingClassName;
 	String metaClassName;
 
-	public void addAttribute(ScimAttributeSchema attribute) {
+	public void addAttribute(ScimResourceAttribute attribute) {
 		if(attributes == null) {
-			attributes = new HashMap<String, ScimAttributeSchema>();
+			attributes = new HashMap<String, ScimResourceAttribute>();
 		}
 		this.attributes.put(attribute.getName(), attribute);
 	}

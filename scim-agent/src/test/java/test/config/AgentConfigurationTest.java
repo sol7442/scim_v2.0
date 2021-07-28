@@ -19,8 +19,10 @@ public class AgentConfigurationTest {
 			DataSourceConfig data_souce = DataSourceConfig.load(DataSourceConfig.class, "../config/maria_config.yaml");
 			log.debug("--> {}",data_souce);
 			
-			config.setDataSource(data_souce);
-			config.getPaths().put("service","../config/service_config.json");
+			//config.setDataSource(data_souce);
+			config.getPaths().put("service"		,"../config/service_config.json");
+			//config.getPaths().put("storage"		,"../config/maria_adapter.yaml");
+			//config.getPaths().put("datasource"	,"../config/maria_config.yaml");
 			
 			config.save("../config/agent_config.yaml");
 		} catch (Exception e) {

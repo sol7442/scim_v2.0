@@ -1,9 +1,9 @@
 package com.raonsnc.scim.repo;
 
-public class MysqlRepositoryRegister implements ScimStorageRegister {
+public class MysqlRepositoryRegister implements DataStorageRegister {
 
 	@Override
-	public ScimStorageFactory regist() {
+	public DataStorageFactory regist() {
 		return new MysqlStorageFactory();
 	}
 

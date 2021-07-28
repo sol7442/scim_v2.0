@@ -4,15 +4,15 @@ package com.raonsnc.scim.represent;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import com.raonsnc.scim.schema.ScimAttributeSchema;
-import com.raonsnc.scim.schema.ScimSimpleAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
+import com.raonsnc.scim.schema.ScimSimpleAttribute;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ScimRepresentAttributeSchema extends ScimAttributeSchema {
+public class ScimRepresentAttributeSchema extends ScimResourceAttribute {
 //	String setMethod;
 //	String getMethod;
 //	String mappedName;
@@ -21,7 +21,7 @@ public class ScimRepresentAttributeSchema extends ScimAttributeSchema {
 //	String attributeType;
 	
 	public ScimRepresentAttributeSchema() {}
-	public ScimRepresentAttributeSchema(ScimAttributeSchema schema) {
+	public ScimRepresentAttributeSchema(ScimResourceAttribute schema) {
 		this.setName(schema.getName());
 		this.setType(schema.getType());
 		this.setDescription(schema.getDescription());
@@ -34,12 +34,12 @@ public class ScimRepresentAttributeSchema extends ScimAttributeSchema {
 		this.setSubAttributes(schema.getSubAttributes());
 	}
 	@Override
-	public void addAttribute(ScimAttributeSchema attribute) {
+	public void addAttribute(ScimResourceAttribute attribute) {
 		if(this.subAttributes == null) {
-			this.subAttributes = new ArrayList<ScimAttributeSchema>();
+			this.subAttributes = new ArrayList<ScimResourceAttribute>();
 		}
-		if (attribute instanceof ScimSimpleAttributeSchema) {
-			ScimSimpleAttributeSchema meta_attribute = new ScimSimpleAttributeSchema(attribute);
+		if (attribute instanceof ScimSimpleAttribute) {
+			ScimSimpleAttribute meta_attribute = new ScimSimpleAttribute(attribute);
 			
 			subAttributes.add(meta_attribute);
 		}

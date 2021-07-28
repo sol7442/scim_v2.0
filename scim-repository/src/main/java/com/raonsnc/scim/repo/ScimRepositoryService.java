@@ -4,9 +4,9 @@ package com.raonsnc.scim.repo;
 import java.util.Map;
 
 import com.raonsnc.scim.ScimException;
-import com.raonsnc.scim.service.ScimEntityAllService;
+import com.raonsnc.scim.service.resource.ScimResourceAllService;
 
-public interface ScimRepositoryService extends ScimEntityAllService, ScimStorageService{
+public interface ScimRepositoryService extends ScimResourceAllService, DataStorageService{
 	public boolean	test() 	throws ScimException;
 	public boolean 	open() 	throws ScimException;
 	public void 	close() throws ScimException;

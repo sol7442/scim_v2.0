@@ -2,14 +2,12 @@ package com.raonsnc.scim.repo;
 
 import javax.sql.DataSource;
 
-import com.raonsnc.scim.repo.conf.ConnectionConfig;
-import com.raonsnc.scim.repo.conf.DataSourceConfig;
 import com.raonsnc.scim.repo.conf.StorageConfig;
 
 
-public class MysqlStorageFactory implements ScimStorageFactory {
+public class MysqlStorageFactory implements DataStorageFactory {
 	@Override
-	public ScimStorage create(DataSource data_source, StorageConfig storage) {
+	public DataStorage create(DataSource data_source, StorageConfig storage) {
 		// TODO Auto-generated method stub
 		return null;
 	}

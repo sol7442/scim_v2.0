@@ -1,9 +1,21 @@
 {
+  "dataSource": {
+    "jdbcUrl": "jdbc:mariadb://192.168.0.105:3306/scim",
+    "user": "scim",
+    "passwd": "1q2w3e4r!@"
+  },
+  "dataStorage": {
+    "driver": "org.mariadb.jdbc.Driver",
+    "validate": "SELECT 1",
+    "schema": "SELECT DISTINCT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN (\u0027information_schema\u0027, \u0027performance_schema\u0027,\u0027mysql\u0027)",
+    "table": "SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA \u003d ?",
+    "columOfTable": "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA \u003d ? AND TABLE_NAME \u003d ?"
+  },
   "services": {
     "entity.read": {
       "name": "entity.read",
       "type": "entity",
-      "className": "ScimEntityReadResourceService"
+      "entityClass": "ScimEntityReadResourceService"
     }
   }
 }

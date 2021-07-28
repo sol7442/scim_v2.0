@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gson.GsonBuilder;
 
-public class ScimMetaSchema extends ScimAttributeSchema  {
+public class ScimMetaSchema extends ScimSingularAttribute  {
 	public ScimMetaSchema() {
 		this.mutability = ScimTypeDefinition.Mutability.readOnly.name();
 		this.type	    = ScimTypeDefinition.DataType.Complex.getType();
@@ -13,7 +13,7 @@ public class ScimMetaSchema extends ScimAttributeSchema  {
 		this.uniqueness = ScimTypeDefinition.Uniqueness.none.name();
 	}
 	
-	public ScimMetaSchema(ScimAttributeSchema attribute) {
+	public ScimMetaSchema(ScimComplexAttribute attribute) {
 		super(attribute);
 		this.mutability = ScimTypeDefinition.Mutability.readOnly.name();
 		this.type	    = ScimTypeDefinition.DataType.Complex.getType();
@@ -24,12 +24,12 @@ public class ScimMetaSchema extends ScimAttributeSchema  {
 		setSubAttributes(attribute.getSubAttributes());
 	}
 
-	public void addAttribute(ScimAttributeSchema attribute) {
+	public void addAttribute(ScimResourceAttribute attribute) {
 		if(this.subAttributes == null) {
-			this.subAttributes = new ArrayList<ScimAttributeSchema>();
+			this.subAttributes = new ArrayList<ScimResourceAttribute>();
 		}
-		if (attribute instanceof ScimSimpleAttributeSchema) {
-			ScimSimpleAttributeSchema meta_attribute = new ScimSimpleAttributeSchema(attribute);
+		if (attribute instanceof ScimSimpleAttribute) {
+			ScimSimpleAttribute meta_attribute = new ScimSimpleAttribute(attribute);
 			
 			subAttributes.add(meta_attribute);
 		}

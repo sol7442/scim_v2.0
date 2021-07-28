@@ -2,10 +2,12 @@ package com.raonsnc.scim.schema;
 
 
 public class ScimSingularAttribute extends ScimComplexAttribute {
-
-	ScimSingularAttribute(ScimAttributeSchema schema) {
+	ScimSingularAttribute(){
+		this.multiValued=false;
+	}
+	ScimSingularAttribute(ScimComplexAttribute schema) {
 		super(schema);
-		this.multiValued=true;
+		this.multiValued=false;
 	}
 
 }

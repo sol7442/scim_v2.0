@@ -1,11 +1,10 @@
 package com.raonsnc.scim.example;
 
-import com.raonsnc.scim.ScimException;
 import java.util.HashMap;
 import com.raonsnc.scim.entity.ScimMeta;
 
 public class SCIM_USER_META extends HashMap<String, Object> implements ScimMeta  {
-	private static final long serialVersionUID = -5031710557702437155L;
+	private static final long serialVersionUID = 9203565867133717196L;
   
     // created time  ;
     public static final String CREATED = "created";

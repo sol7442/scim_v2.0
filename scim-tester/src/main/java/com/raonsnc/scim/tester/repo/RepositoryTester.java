@@ -10,9 +10,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.raonscn.scim.config.ConfigrationHandler;
-import com.raonsnc.scim.repo.ScimStorageRegistry;
+import com.raonsnc.scim.repo.DataStorageRegistry;
 import com.raonsnc.scim.repo.conf.DataSourceConfig;
-import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
+import com.raonsnc.scim.repo.impl.ScimDataSourceBuilder;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class RepositoryTester {
 	@BeforeAll
 	static public void initialize() {
 		try {
-			ScimStorageRegistry.getInstance().initialize();
+			DataStorageRegistry.getInstance().initialize();
 			configFile 	= "../config/maria_config.yaml";
 			adapterFile = "../config/maria_adapter.yaml";
 		}catch (Exception e) {
@@ -46,7 +46,7 @@ public class RepositoryTester {
 	
 	DataSource data_source = null;
 	public RepositoryTester() {
-		ScimStorageRegistry.getInstance().initialize();
+		DataStorageRegistry.getInstance().initialize();
 	}
 	
 	@Test

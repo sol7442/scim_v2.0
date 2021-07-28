@@ -1,0 +1,11 @@
+//scim-service
+
+def jersey_ver = '2.6'
+dependencies {
+	implementation project(":scim-repository")
+	// https://mvnrepository.com/artifact/javax.servlet/servlet-api
+		
+	implementation group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+	implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: jersey_ver
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: jersey_ver
+}

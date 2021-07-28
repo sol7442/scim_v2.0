@@ -1,10 +1,6 @@
 package com.raonsnc.scim.agent;
 
-import java.security.Principal;
 import java.util.Date;
-import java.util.Map.Entry;
-
-import javax.sql.DataSource;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -14,13 +10,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import com.raonsnc.scim.config.ScimAgentConfig;
-import com.raonsnc.scim.repo.ScimRepositoryAdapter;
-import com.raonsnc.scim.repo.ScimRepositoryService;
-import com.raonsnc.scim.repo.ScimStorage;
-import com.raonsnc.scim.repo.ScimStorageRegistry;
-import com.raonsnc.scim.repo.conf.DataSourceConfig;
-import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.rdb.ScimDataSourceBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,51 +54,30 @@ public class ScimAgentMain {
 	}
 	public void initialize(String configFile) {
 		try {
-			log.info("----------------------------------------------------------------------:{}",configFile);
 			ScimAgentConfig config = ScimAgentConfig.load(configFile);
 			log.debug("{}", config);
 			
-			initJettyServer(config);
-			initRepository(config);
+			jettyServer = new Server();
+			ServerConnector connector = new ServerConnector(jettyServer);
+			connector.setIdleTimeout(config.getIdleTime());
+			connector.setPort(config.getPort());
 			
+			jettyServer.setStopAtShutdown(true);
+			jettyServer.setConnectors(new Connector[] {connector});
+
+			ServletContextHandler ctx = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
+			ctx.setContextPath("/");
+			jettyServer.setHandler(ctx);
+			
+			ServletHolder serHol = ctx.addServlet(ServletContainer.class, "/scim/*");
+			serHol.setInitOrder(1);
+			serHol.setInitParameter("jersey.config.server.provider.packages","com.raonsnc.scim.controller");
+			serHol.setInitParameter("javax.ws.rs.Application", "com.raonsnc.scim.service.ScimApplication");
+			
+			serHol.setInitParameter("scim.service.config"	,config.getPaths().get("service"));
 		}catch (Exception e) {
 			log.error(e.getMessage());
 		}
-	}
-	private void initRepository(ScimAgentConfig config) {
-		
-		DataSource data_source;
-		try {
-			data_source = new ScimDataSourceBuilder()
-					.build(DataSourceConfig.load(DataSourceConfig.class,""));
-			
-			ScimStorage data_stoage = ScimStorageRegistry.getInstance().create(data_source,
-					StorageConfig.load(StorageConfig.class,""));
-			
-			ScimRepositoryService repository = new ScimRepositoryAdapter("oacx", data_source, data_stoage);
-			
-		} catch (Exception e) {
-			log.warn(e.getMessage(), e);
-		}
-	}
-	private void initJettyServer(ScimAgentConfig config) {
-		jettyServer = new Server();
-		ServerConnector connector = new ServerConnector(jettyServer);
-		connector.setIdleTimeout(config.getIdleTime());
-		connector.setPort(config.getPort());
-		
-		jettyServer.setStopAtShutdown(true);
-		jettyServer.setConnectors(new Connector[] {connector});
-
-		ServletContextHandler ctx = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
-		ctx.setContextPath("/");
-		jettyServer.setHandler(ctx);
-		
-		ServletHolder serHol = ctx.addServlet(ServletContainer.class, "/scim/*");
-		serHol.setInitOrder(1);
-		serHol.setInitParameter("jersey.config.server.provider.packages","com.raonsnc.scim.controller");
-		serHol.setInitParameter("javax.ws.rs.Application", ScimApplication.class.getName());
-		serHol.setInitParameter("scim.service.config",config.getPaths().get("service"));
 	}
 
 	public void excute() {

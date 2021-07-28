@@ -13,16 +13,14 @@ import javax.sql.DataSource;
 
 import com.raonsnc.scim.ScimException;
 import com.raonsnc.scim.repo.conf.StorageConfig;
-import com.raonsnc.scim.repo.rdb.ScimRdbAttributeSchema;
-import com.raonsnc.scim.repo.rdb.ScimRdbResourceSchema;
-import com.raonsnc.scim.schema.ScimAttributeSchema;
+import com.raonsnc.scim.schema.ScimResourceAttribute;
 import com.raonsnc.scim.schema.ScimResourceSchema;
 import com.raonsnc.scim.schema.ScimTypeDefinition;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MariaStorage implements ScimStorage {
+public class MariaStorage implements DataStorage {
 	DataSource dataSource;
 	StorageConfig config;
 
@@ -93,8 +91,8 @@ public class MariaStorage implements ScimStorage {
 	}
 
 	@Override
-	public List<ScimResourceSchema> getResourceSchemaList(String schema) throws ScimException {
-		List<ScimResourceSchema> resource_list = new ArrayList<ScimResourceSchema>();
+	public List<ScimEntitySchema> getEntitySchemaList(String schema) throws ScimException {
+		List<ScimEntitySchema> entity_list = new ArrayList<ScimEntitySchema>();
 		Connection connection = null;
 		PreparedStatement statement = null;
 		ResultSet result_set = null;
@@ -108,12 +106,12 @@ public class MariaStorage implements ScimStorage {
 
 				ScimTypeDefinition.StorageType storage_type = find_resource_type(result_set);
 
-				ScimRdbResourceSchema resource = new ScimRdbResourceSchema();
-				resource.setStorageName(result_set.getString("TABLE_NAME"));
-				resource.setStorageOwner(result_set.getString("TABLE_SCHEMA"));
-				resource.setStorageType(storage_type);
+				ScimEntitySchema entity = new ScimEntitySchema();
+				entity.setStorageName(result_set.getString("TABLE_NAME"));
+				entity.setStorageSchema(result_set.getString("TABLE_SCHEMA"));
+				entity.setStorageType(storage_type);
 
-				resource_list.add(resource);
+				entity_list.add(entity);
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -121,7 +119,7 @@ public class MariaStorage implements ScimStorage {
 			close_connection(connection, statement, result_set);
 		}
 
-		return resource_list;
+		return entity_list;
 	}
 
 	private ScimTypeDefinition.DataType find_scim_type(String sql_data_type) throws SQLException {
@@ -152,23 +150,24 @@ public class MariaStorage implements ScimStorage {
 				break;
 			}
 		}
-
-		log.debug("{}->{}", sql_data_type, scim_data_type);
 		return scim_data_type;
 	}
 
 	@Override
-	public void findAttributeSchema(ScimResourceSchema resource) throws ScimException {
-		if (resource instanceof ScimRdbResourceSchema) {
-			ScimRdbResourceSchema rdb_resource = (ScimRdbResourceSchema) resource;
-			rdb_resource.setAttributes(getAttributeSchema(resource));
-		}
+	public ScimEntitySchema getEntitySchema(String owner, String name) throws ScimException {
+		ScimEntitySchema entity = new ScimEntitySchema();
+//		if (resource instanceof ScimEntitySchema) {
+//			ScimEntitySchema rdb_resource = (ScimEntitySchema) resource;
+//			rdb_resource.setAttributes(getAttributeSchema(resource));
+//		}
+		
+		return entity;
 	}
 
 	@Override
-	public Map<String, ScimAttributeSchema> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
-		Map<String, ScimAttributeSchema> attributes = new HashMap<String, ScimAttributeSchema>();
-		ScimRdbResourceSchema rdb_resource = (ScimRdbResourceSchema) resource;
+	public Map<String, ScimResourceAttribute> getAttributeSchema(ScimResourceSchema resource) throws ScimException {
+		Map<String, ScimResourceAttribute> attributes = new HashMap<String, ScimResourceAttribute>();
+		ScimEntitySchema rdb_resource = (ScimEntitySchema) resource;
 
 		Connection connection = null;
 		PreparedStatement statement = null;
@@ -177,7 +176,7 @@ public class MariaStorage implements ScimStorage {
 
 			connection = dataSource.getConnection();
 			statement = connection.prepareStatement(this.config.getColumOfTable());
-			statement.setString(1, rdb_resource.getStorageOwner());
+			statement.setString(1, rdb_resource.getStorageSchema());
 			statement.setString(2, rdb_resource.getStorageName());
 
 			result_set = statement.executeQuery();
@@ -200,11 +199,13 @@ public class MariaStorage implements ScimStorage {
 				}
 				ScimTypeDefinition.DataType scim_type = find_scim_type(type_name);
 				int data_type = this.metaData.get(type_name);
-
-				ScimRdbAttributeSchema attribute = new ScimRdbAttributeSchema(
+				
+				ScimEntityAttribute attribute = new ScimEntityAttribute(
 						column_name, scim_type, type_name,	data_type, length,
 						description, index, column_default, is_null_able);
 
+				log.debug("{}->{}({}):{}", attribute.getName(), type_name,data_type, scim_type);
+				
 				attributes.put(attribute.getName(), attribute);
 			}
 		} catch (Exception e) {
